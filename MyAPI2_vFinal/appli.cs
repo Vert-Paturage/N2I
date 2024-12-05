@@ -1,21 +1,12 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-	app.UseSwagger();
-	app.UseSwaggerUI();
-}
+app.UseStaticFiles();
 
-app.UseHttpsRedirection();
-
-app.MapGet("/", () =>
-{
-	return "";
-});
+app.MapGet("/", () => Results.Redirect("./index.html"));
 
 app.Run();
