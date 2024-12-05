@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "three": "^0.171.0"
+  },
+  "name": "n2i",
+  "version": "1.0.0",
+  "description": "## 📋 Présentation du projet Nous avons participé à la Nuit de l'Info 2024, un hackathon national qui s'est déroulé dans la nuit du jeudi 5 décembre 2024.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
