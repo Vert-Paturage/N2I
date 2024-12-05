@@ -14,3 +14,10 @@ Voici les membres de notre équipe :
 - Paul CHOPINET
 - William BOYARD
 
+## 🔧 Technologies utilisées
+Les outils et technologies que nous avons exploités pour mener à bien ce projet :
+
+- Langages : 
+- Frameworks : 
+- Base de données : 
+- Outils de collaboration : 
