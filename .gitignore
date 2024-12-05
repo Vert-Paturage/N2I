@@ -1,0 +1,9 @@
+# IDE
+.vscode
+.vs
+.idea
+
+# cs
+obj
+bin
+appsettings.Development.json
