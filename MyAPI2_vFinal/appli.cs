@@ -7,6 +7,6 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-app.MapGet("/", () => Results.Redirect("./index.html"));
+app.MapGet("/", () => Results.Redirect("./captcha.html"));
 
 app.Run();

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Captcha</title>
+	<style>body{margin: 0;}</style>
+</head>
+<body>
+	<div id="captcha">
+		<h1 id="captchaTitre">Prouvez que vous n'êtes pas <br><b>humain</b></h1>
+		<p id="enonce">Trouver x</p>
+		<p id="equation">e</p>
+		<input id="response" type="text" placeholder="x = ?">
+		<div id="outputtext"></div>
+		<button id="refreshButton" onclick="doRefresh()" style="display: none;">Refresh</button>
+	</div>
+
+	<script>
+		function preprocessing() {
+			randomEquation = getRandomEquation()
+			document.getElementById("equation").innerHTML = randomEquation
+		}
+
+		function redirectToApp() {
+			window.location.replace("app.html")
+		}
+
+		function traitementFail() {
+			document.getElementById("outputtext").innerHTML = "Vous n'êtes pas un robot !"
+			document.getElementById("refreshButton").style.display = "inline-block"
+		}
+
+		function traitementOk() {
+			document.getElementById("outputtext").innerHTML = "Vous êtes bien un robot"
+			let timer = setTimeout(redirectToApp, 1000)
+		}
+
+		preprocessing();
+
+		let timer = setTimeout(traitementFail, 2000)
+
+		const input = document.getElementById("response")
+
+		input.addEventListener('input', () => {
+			clearTimeout(timer)
+			traitementOk()
+		})
+		
+		function getRandomEquation() {
+			const a = Math.floor(Math.random() * 10) + 1;
+			const b = Math.floor(Math.random() * 21) - 10;
+			const c = Math.floor(Math.random() * 21) - 10;
+
+			return `${a}x² ${b >= 0 ? '+' : ''} ${b}x ${c >= 0 ? '+' : ''} ${c} = 0`;
+		}
+
+		function doRefresh() {
+			window.location.reload()
+		}
+	</script>
+</body>
+</html>
