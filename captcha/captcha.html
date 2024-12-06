@@ -118,6 +118,9 @@
     </div>
 
     <script>
+		function redirect() {
+			window.location.href = "/obstacle/obstacle.html"
+		}
         let clickCount = 0;
         const heart = document.getElementById('heart');
         const button = document.getElementById('validateButton');
@@ -162,6 +165,7 @@
                 : "Oups, il semble que vous ayez fait une erreur. Essayez encore ! 🌊🐋";
 
             document.getElementById('response').textContent = responseText;
+			setTimeout(redirect, 5000)
         });
     </script>
 

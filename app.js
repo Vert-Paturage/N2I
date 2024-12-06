@@ -96,7 +96,7 @@ const clickablePoints = [];
 
 const coeurRing = createRing(new THREE.Vector3(0.5, 1.5, 1));
 const coeurClickable = createClickableArea(new THREE.Vector3(0.5, 1.5, 1));
-clickablePoints.push({ ring: coeurRing, area: coeurClickable, game: "/obstacle/obstacle.html" });
+clickablePoints.push({ ring: coeurRing, area: coeurClickable, game: "/captcha/captcha.html" });
 
 const foieRing = createRing(new THREE.Vector3(-0.3, 0, 1));
 const foieClickable = createClickableArea(new THREE.Vector3(-0.3, 0, 1));
