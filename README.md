@@ -6,6 +6,13 @@ Nous avons participé à la Nuit de l'Info 2024, un hackathon national qui s'est
 ## 🎯 Objectifs 
 
 Cette application vise à montrer le lien entre les **océans** et le **corps humain**, tout en proposant une expérience à la fois éducative, interactive et engageante.
+- Coraux = Poumons
+- Mangroves = Foie
+- Fonds marins = Os
+- Courants marins = Système circulatoire, Cœur
+- Tortues marines = Système nerveux
+- Crabe = Système digestif
+
 
 ## 🐐 Équipe
 
