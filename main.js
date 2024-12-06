@@ -3,7 +3,8 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
 
 // Scène et caméra
 const scene = new THREE.Scene();
@@ -31,6 +32,13 @@ const directionalLight = new THREE.DirectionalLight(0xf2e9e9, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; // Permet un mouvement plus fluide
+controls.dampingFactor = 0.05; // Facteur de ralentissement
+controls.screenSpacePanning = false; // Permet ou non de déplacer la caméra verticalement
+controls.minDistance = 5; // Distance minimale de la caméra au centre
+controls.maxDistance = 50; // Distance maximale de la caméra au centre
+controls.maxPolarAngle = Math.PI / 2; // Limite la caméra à une vue de dessus (90°)
 
 let model;
 const gltfLoader = new GLTFLoader();
@@ -45,8 +53,10 @@ gltfLoader.load(
     const center = new THREE.Vector3();
     box.getCenter(center);
     model.position.sub(center);
-    model.scale.set(5,5,5)
+    model.scale.set(5,5,5)    
     // model.scale.set(20,20,20)
+
+    model.rotateY(Math.PI);
 
     scene.add(model);
   },
@@ -58,28 +68,35 @@ gltfLoader.load(
   }
 );
 
-// const fbxLoader = new FBXLoader();
-// fbxLoader.load(
-//   "./3D_models/male_003.fbx", 
-//   (object) => {
-//     model = object;
 
-//     // Centrer le modèle
-//     const box = new THREE.Box3().setFromObject(model);
-//     const center = new THREE.Vector3();
-//     box.getCenter(center);
-//     model.position.sub(center);
-//     model.scale.set(20,20,20)
+// Ajouter un point (une petite sphère) sur le modèle
+const pointGeometry = new THREE.SphereGeometry(0.5, 32, 32); // Petite sphère
+const pointMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-//     scene.add(model);
-//   },
-//   (progress) => {
-//     console.log(`Progression du chargement : ${(progress.loaded / progress.total) * 100}%`);
-//   },
-//   (error) => {
-//     console.error("Erreur lors du chargement du fichier GLB :", error);
-//   }
-// );
+const coeur_point = new THREE.Mesh(pointGeometry, pointMaterial);
+coeur_point.position.set(0.5, 1.5, 0); // Position relative au modèle
+scene.add(coeur_point);
+
+const foie_point = new THREE.Mesh(pointGeometry, pointMaterial);
+foie_point.position.set(-0.3, 0, 0.4); // Position relative au modèle
+scene.add(foie_point);
+
+const intestin_point = new THREE.Mesh(pointGeometry, pointMaterial);
+intestin_point.position.set(0.3, 0, 0.4); // Position relative au modèle
+scene.add(intestin_point);
+
+const poumon_point = new THREE.Mesh(pointGeometry, pointMaterial);
+poumon_point.position.set(-0.5, 1.5, 0); // Position relative au modèle
+scene.add(poumon_point);
+
+const tibia_point = new THREE.Mesh(pointGeometry, pointMaterial);
+tibia_point.position.set(-0.5, -4, 0); // Position relative au modèle
+scene.add(tibia_point);
+
+const system_nerveux_point = new THREE.Mesh(pointGeometry, pointMaterial);
+system_nerveux_point.position.set(0, 3, 0); // Position relative au modèle
+scene.add(system_nerveux_point);
+
 
 // Composer pour post-processing
 const composer = new EffectComposer(renderer);
@@ -139,13 +156,85 @@ const vhsShader = {
 
 function animate(time) {
 
-  if (model) {
-    model.rotation.y += 0.01;
-  }
+//   if (model) {
+//     model.rotation.y += 0.01;
+//   }
 
-  // shaderPass.uniforms.time.value = time * 0.001;
+//   shaderPass.uniforms.time.value = time * 0.001;
 
+    controls.update(); // Met à jour les contrôles  
   composer.render();
   requestAnimationFrame(animate);
 }
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Détecter le clic de la souris
+window.addEventListener('click', (event) => {
+  // Normaliser les coordonnées de la souris
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Mettre à jour le raycaster
+  raycaster.setFromCamera(mouse, camera);
+
+  // Vérifier les intersections  
+  if (raycaster.intersectObject(coeur_point).length > 0) {
+    moveCameraToPoint(coeur_point);
+  }
+  
+  if (raycaster.intersectObject(foie_point).length > 0) {
+    moveCameraToPoint(foie_point);
+  }
+
+  if (raycaster.intersectObject(intestin_point).length > 0) {
+    moveCameraToPoint(intestin_point);
+  }
+
+  if (raycaster.intersectObject(tibia_point).length > 0) {
+    moveCameraToPoint(tibia_point);
+  }
+
+  if (raycaster.intersectObject(system_nerveux_point).length > 0) {
+    moveCameraToPoint(system_nerveux_point);
+  }
+});
+
+
+function moveCameraToPoint(target) {
+    // Position cible (point + distance pour un zoom ajusté)
+    const targetPosition = new THREE.Vector3();
+    target.getWorldPosition(targetPosition); // Obtenir la position globale du point
+  
+    const offset = new THREE.Vector3(0, 1, 3); // Ajustez cet offset pour définir la distance par rapport au point
+    const finalPosition = targetPosition.clone().add(offset);
+  
+    // Animations
+    const startPosition = camera.position.clone();
+    const duration = 3000; // Durée de l'animation (en ms)
+    let startTime = null;
+  
+    function animateCamera(time) {
+      if (!startTime) startTime = time;
+      const elapsedTime = time - startTime;
+      const t = Math.min(elapsedTime / duration, 1); // Interpolation (0 à 1)
+  
+      // Interpolation de la position
+      camera.position.lerpVectors(startPosition, finalPosition, t);
+  
+      // Faire en sorte que la caméra regarde le point
+      camera.lookAt(targetPosition);
+  
+      // Continuer l'animation tant que `t` n'a pas atteint 1
+      if (t < 1) {
+        requestAnimationFrame(animateCamera);
+      }
+    }
+  
+    requestAnimationFrame(animateCamera);
+  }
+  
+
+
 animate();
