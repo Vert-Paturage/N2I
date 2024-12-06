@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -44,53 +44,55 @@
 
   <canvas id="gameCanvas" width="600" height="400"></canvas>
   <div class="message" id="scoreDisplay">Score: 0</div>
-  <div class="instruction">Utilisez les flèches gauche/droite pour déplacer le bateau et récupérer les déchets avant qu'ils n'aterissent dans l'océan.</div>
+  <div class="instruction">Utilisez les flèches gauche/droite pour déplacer la mangrove et récupérer les toxines (déchets, produits chimiques) pour les éliminer.</div>
   <div class="message" id="timerDisplay">Temps restant: 30</div>
 
   <script>
-    // Variables de jeu
+  
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
     let score = 0;
     let boatX = canvas.width / 2 - 25;
-    const boatWidth = 50;
-    const boatHeight = 30;
+    const boatWidth = 80;
+    const boatHeight = 50;
     let boatSpeed = 5;
 
     let trashItems = [];
     let trashSpeed = 2;
 
-    let gameTime = 30; // 30 secondes
-    let gameInterval; // Pour stocker l'intervalle de temps
+    let gameTime = 30; 
+    let gameInterval; 
     let gameOver = false;
 
-    // Fonction pour dessiner le bateau
+    const boatImage = new Image();
+    boatImage.src = 'mangroves.jpg'; 
+
+  
     function drawBoat() {
-      ctx.fillStyle = "#8B4513"; // couleur du bateau
-      ctx.fillRect(boatX, canvas.height - boatHeight - 10, boatWidth, boatHeight);
+      ctx.drawImage(boatImage, boatX, canvas.height - boatHeight - 10, boatWidth, boatHeight);
     }
 
-    // Fonction pour dessiner les déchets
+   
     function drawTrash() {
-      ctx.fillStyle = "green"; // couleur des déchets
+      ctx.fillStyle = "green"; 
       trashItems.forEach(item => {
         ctx.fillRect(item.x, item.y, 20, 20);
       });
     }
 
-    // Fonction pour mettre à jour les déchets
+    
     function updateTrash() {
       trashItems.forEach(item => {
         item.y += trashSpeed;
         if (item.y > canvas.height) {
-          item.y = -20; // réinitialiser la position des déchets lorsqu'ils tombent
+          item.y = -20; 
           item.x = Math.random() * (canvas.width - 20);
         }
       });
     }
 
-    // Vérifier si le bateau récupère un déchet
+    
     function checkCollisions() {
       trashItems.forEach((item, index) => {
         if (
@@ -99,14 +101,14 @@
           item.y < canvas.height - boatHeight - 10 + boatHeight &&
           item.y + 20 > canvas.height - boatHeight - 10
         ) {
-          trashItems.splice(index, 1); // supprimer le déchet récupéré
-          score++; // augmenter le score
+          trashItems.splice(index, 1); 
+          score++; 
           document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
         }
       });
     }
 
-    // Fonction pour gérer les mouvements du bateau
+    
     function moveBoat(e) {
       if (e.key === "ArrowLeft" && boatX > 0) {
         boatX -= boatSpeed;
@@ -116,7 +118,7 @@
       }
     }
 
-    // Ajouter de nouveaux déchets de manière aléatoire
+   
     function generateTrash() {
       if (Math.random() < 0.02) {
         trashItems.push({
@@ -126,7 +128,7 @@
       }
     }
 
-    // Mettre à jour le timer et arrêter le jeu après 30 secondes
+  
     function updateTimer() {
       if (gameOver) return;
 
@@ -141,9 +143,9 @@
       }
     }
 
-    // Fonction pour mettre à jour le jeu
+   
     function updateGame() {
-      if (gameOver) return; // Si le jeu est terminé, on arrête le jeu
+      if (gameOver) return; 
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBoat();
@@ -154,11 +156,11 @@
       requestAnimationFrame(updateGame);
     }
 
-    // Démarrer le jeu
+
     window.addEventListener("keydown", moveBoat);
 
-    // Démarrer le chronomètre
-    gameInterval = setInterval(updateTimer, 1000); // Met à jour le timer toutes les secondes
+
+    gameInterval = setInterval(updateTimer, 1000); 
 
     updateGame();
   </script>
