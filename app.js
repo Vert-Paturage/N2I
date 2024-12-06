@@ -22,7 +22,7 @@ const initialCameraLookAt = new THREE.Vector3(0, 0, 0);
 
 // Rendu
 const renderer = new THREE.WebGLRenderer();
-renderer.setClearColor(0xDEDBDB, 1);
+renderer.setClearColor(0x000000, 1); // Fond noir
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -32,6 +32,10 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
+
+const topLight = new THREE.PointLight(0xffffff, 1000, 50); // Lumière blanche, intensité 1.5, portée 50
+topLight.position.set(0, 10, 0); // Position au-dessus du modèle
+scene.add(topLight);
 
 let model;
 const gltfLoader = new GLTFLoader();
@@ -59,34 +63,60 @@ gltfLoader.load(
   }
 );
 
+function createRing(position) {
+  const ringGeometry = new THREE.RingGeometry(0.1, 0.15, 32);
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff9900,
+    transparent: true,
+    opacity: 0.8,
+    side: THREE.DoubleSide,
+  });
+  const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+  ring.position.copy(position);
+  ring.lookAt(camera.position);
+  scene.add(ring);
+  return ring;
+}
 
-// Ajouter un point (une petite sphère) sur le modèle
-const pointGeometry = new THREE.SphereGeometry(0.5, 32, 32); // Petite sphère
-const pointMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-const coeur_point = new THREE.Mesh(pointGeometry, pointMaterial);
-coeur_point.position.set(0.5, 1.5, 0); // Position relative au modèle
-scene.add(coeur_point);
+function createClickableArea(position) {
+  const invisibleGeometry = new THREE.RingGeometry(0, 0.50, 32);
+  const invisibleMaterial = new THREE.MeshBasicMaterial({
+    transparent: true,
+    opacity: 0,
+  });
+  const clickableArea = new THREE.Mesh(invisibleGeometry, invisibleMaterial);
+  clickableArea.position.copy(position);
+  clickableArea.lookAt(camera.position);
+  scene.add(clickableArea);
+  return clickableArea;
+}
 
-const foie_point = new THREE.Mesh(pointGeometry, pointMaterial);
-foie_point.position.set(-0.3, 0, 0.4); // Position relative au modèle
-scene.add(foie_point);
+const clickablePoints = [];
 
-const intestin_point = new THREE.Mesh(pointGeometry, pointMaterial);
-intestin_point.position.set(0.3, 0, 0.4); // Position relative au modèle
-scene.add(intestin_point);
+const coeurRing = createRing(new THREE.Vector3(0.5, 1.5, 1));
+const coeurClickable = createClickableArea(new THREE.Vector3(0.5, 1.5, 1));
+clickablePoints.push({ ring: coeurRing, area: coeurClickable, game: "/obstacle/obstacle.html" });
 
-const poumon_point = new THREE.Mesh(pointGeometry, pointMaterial);
-poumon_point.position.set(-0.5, 1.5, 0); // Position relative au modèle
-scene.add(poumon_point);
+const foieRing = createRing(new THREE.Vector3(-0.3, 0, 1));
+const foieClickable = createClickableArea(new THREE.Vector3(-0.3, 0, 1));
+clickablePoints.push({ ring: foieRing, area: foieClickable, game: "/recuperation/index.html" });
 
-const tibia_point = new THREE.Mesh(pointGeometry, pointMaterial);
-tibia_point.position.set(-0.5, -4, 0); // Position relative au modèle
-scene.add(tibia_point);
+const intestinRing = createRing(new THREE.Vector3(0.3, 0, 1));
+const intestinClickable = createClickableArea(new THREE.Vector3(0.3, 0, 1));
+clickablePoints.push({ ring: intestinRing, area: intestinClickable, game: "/pacman/pacman.html" });
 
-const system_nerveux_point = new THREE.Mesh(pointGeometry, pointMaterial);
-system_nerveux_point.position.set(0, 3, 0); // Position relative au modèle
-scene.add(system_nerveux_point);
+const poumonRing = createRing(new THREE.Vector3(-0.5, 1.5, 1));
+const poumonClickable = createClickableArea(new THREE.Vector3(-0.5, 1.5, 1));
+clickablePoints.push({ ring: poumonRing, area: poumonClickable, game: "/jeu-poumons/poumons.html" });
+
+const tibiaRing = createRing(new THREE.Vector3(-0.5, -4, 1));
+const tibiaClickable = createClickableArea(new THREE.Vector3(-0.5, -4, 1));
+clickablePoints.push({ ring: tibiaRing, area: tibiaClickable, game: "/puzzle/puzzle.html" });
+
+const systemNerveuxRing = createRing(new THREE.Vector3(0, 3, 1));
+const systemNerveuxClickable = createClickableArea(new THREE.Vector3(0, 3, 1));
+clickablePoints.push({ ring: systemNerveuxRing, area: systemNerveuxClickable, game: "/tortues/tortues.html" });
 
 
 // Composer pour post-processing
@@ -142,16 +172,12 @@ const vhsShader = {
   `,
 };
 
-// const shaderPass = new ShaderPass(vhsShader);
-// composer.addPass(shaderPass);
+const shaderPass = new ShaderPass(vhsShader);
+composer.addPass(shaderPass);
 
 function animate(time) {
 
-//   if (model) {
-//     model.rotation.y += 0.01;
-//   }
-
-//   shaderPass.uniforms.time.value = time * 0.001;
+  shaderPass.uniforms.time.value = time * 0.001;
 
   composer.render();
   requestAnimationFrame(animate);
@@ -176,36 +202,20 @@ window.addEventListener('click', (event) => {
   // Mettre à jour le raycaster
   raycaster.setFromCamera(mouse, camera);
 
-  // Vérifier les intersections  
-  if (raycaster.intersectObject(coeur_point).length > 0) {
-    moveCameraToPoint(coeur_point);
-	openPopup("/obstacle/obstacle.html")
-  }
+    // Vérifier les intersections
+    const intersects = raycaster.intersectObjects(clickablePoints.map(p => p.area));
 
-  if (raycaster.intersectObject(poumon_point).length > 0) {
-	moveCameraToPoint(poumon_point)
-	openPopup("/jeu-poumons/poumons.html")
-  }
+    if (intersects.length > 0) {
+      // Trouver l'objet cliqué
+      const clickedPoint = clickablePoints.find(p => p.area === intersects[0].object);
   
-  if (raycaster.intersectObject(foie_point).length > 0) {
-    moveCameraToPoint(foie_point);
-	openPopup("/recuperation/index.html")
-  }
+      if (clickedPoint) {
+        moveCameraToPoint(clickedPoint);
 
-  if (raycaster.intersectObject(intestin_point).length > 0) {
-    moveCameraToPoint(intestin_point);
-	openPopup("/pacman/pacman.html")
-  }
-
-  if (raycaster.intersectObject(tibia_point).length > 0) {
-    moveCameraToPoint(tibia_point);
-	openPopup("/puzzle/puzzle.html")
-  }
-
-  if (raycaster.intersectObject(system_nerveux_point).length > 0) {
-    moveCameraToPoint(system_nerveux_point);
-	openPopup("/tortues/tortues.html")
-  }
+        clickablePoints.forEach(p => { p.ring.visible = false; });
+      }
+    }
+ 
 });
 
 function openPopup(path) {
@@ -218,7 +228,7 @@ function openPopup(path) {
 function moveCameraToPoint(target) {
     // Position cible (point + distance pour un zoom ajusté)
     const targetPosition = new THREE.Vector3();
-    target.getWorldPosition(targetPosition); // Obtenir la position globale du point
+    target.ring.getWorldPosition(targetPosition); // Obtenir la position globale du point
   
     const offset = new THREE.Vector3(0, 1, 3); // Ajustez cet offset pour définir la distance par rapport au point
     const finalPosition = targetPosition.clone().add(offset);
@@ -243,6 +253,9 @@ function moveCameraToPoint(target) {
       if (t < 1) {
         requestAnimationFrame(animateCamera);
       }
+	  else{
+		openPopup(target.game)
+	  }
     }
   
     requestAnimationFrame(animateCamera);
@@ -275,13 +288,8 @@ function animateCameraToInitialPosition() {
     }
   }
 
+  clickablePoints.forEach(p => { p.ring.visible = true; });
   requestAnimationFrame(animate);
 }
-
-document.getElementById('resetCamera').addEventListener('click', () => {
-  animateCameraToInitialPosition();
-});
-
-
 
 animate();
