@@ -18,9 +18,9 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             margin: 0 auto;
+            text-align: center;
         }
         h2 {
-            text-align: center;
             color: #2f4f4f;
         }
         .question {
@@ -34,19 +34,28 @@
         .options li {
             margin: 10px 0;
         }
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
+        .heart {
+            font-size: 100px;
+            color: red;
             cursor: pointer;
-            font-size: 16px;
+            transition: transform 0.3s ease-in-out;
         }
-        .btn-submit:hover {
-            background-color: #45a049;
+        .heart.clicked {
+            transform: scale(1.5);  /* Agrandit le cœur */
+        }
+        .button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button.visible {
+            display: block;
         }
         .response {
             font-size: 16px;
@@ -97,16 +106,42 @@
                 </ul>
             </div>
 
-            <button type="submit" class="btn-submit">Valider</button>
+            <!-- Cœur qui doit être cliqué 4 fois rapidement -->
+            <div class="question">
+                <p><strong>5. Cliquez sur le cœur !</strong></p>
+                <div id="heart" class="heart">❤️</div>
+                <button type="button" id="validateButton" class="button">Valider</button>
+            </div>
         </form>
 
         <div id="response" class="response"></div>
     </div>
 
     <script>
-        document.getElementById('captchaForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        let clickCount = 0;
+        const heart = document.getElementById('heart');
+        const button = document.getElementById('validateButton');
+        const form = document.getElementById('captchaForm');
 
+        heart.addEventListener('click', function() {
+            clickCount++;
+
+            // Applique l'effet de clic (agrandissement)
+            heart.classList.add('clicked');
+
+            // Après un certain délai, rétrécit le cœur
+            setTimeout(function() {
+                heart.classList.remove('clicked');
+            }, 300); // Rétrécir après 300ms
+
+            // Si le cœur a été cliqué 4 fois, affiche le bouton "Valider"
+            if (clickCount >= 4) {
+                button.classList.add('visible');
+            }
+        });
+
+        // Action du bouton "Valider"
+        button.addEventListener('click', function() {
             let score = 0;
             const responses = {
                 q1: 'b', // Aquaman
@@ -115,7 +150,7 @@
                 q4: 'b'  // Les courants marins
             };
 
-            const formData = new FormData(event.target);
+            const formData = new FormData(form);
             for (const [name, value] of formData) {
                 if (responses[name] === value) {
                     score++;
