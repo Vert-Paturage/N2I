@@ -204,7 +204,7 @@ window.addEventListener('click', (event) => {
 
   if (raycaster.intersectObject(system_nerveux_point).length > 0) {
     moveCameraToPoint(system_nerveux_point);
-
+	openPopup("/tortues/tortues.html")
   }
 });
 
