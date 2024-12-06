@@ -1,29 +1,20 @@
-# Étape 1 : Construire l'application
-FROM node:18 AS build
+# Étape 1 : Utiliser une image Node.js officielle
+FROM node:18
 
-# Définir le répertoire de travail
+# Étape 2 : Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier les fichiers de configuration et de dépendances
+# Étape 3 : Copier les fichiers package.json et package-lock.json pour installer les dépendances
 COPY package*.json ./
 
-# Installer les dépendances
+# Étape 4 : Installer les dépendances
 RUN npm install
 
-# Copier le reste des fichiers du projet
+# Étape 5 : Copier le reste des fichiers de l'application dans le conteneur
 COPY . .
 
-# Construire l'application avec Vite
-RUN npx vite build
-
-# Étape 2 : Servir l'application (production)
-FROM nginx:alpine AS production
-
-# Copier les fichiers construits depuis l'étape précédente
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Exposer le port 80
+# Étape 6 : Exposer le port que votre serveur utilise (par exemple 3000)
 EXPOSE 80
 
-# Démarrer Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Étape 7 : Démarrer l'application
+CMD ["npx", "vite", "--host", "--port", "80"]
