@@ -3,7 +3,6 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 
 // Scène et caméra
@@ -17,33 +16,26 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 2, 10); 
 camera.lookAt(0, 0, 0);
 
+const initialCameraPosition = camera.position.clone();
+const initialCameraLookAt = new THREE.Vector3(0, 0, 0);
+
+
 // Rendu
 const renderer = new THREE.WebGLRenderer();
 renderer.setClearColor(0xDEDBDB, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-const ambientLight = new THREE.AmbientLight(0xf2e9e9, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-const directionalLight = new THREE.DirectionalLight(0xf2e9e9, 1);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Permet un mouvement plus fluide
-controls.dampingFactor = 0.05; // Facteur de ralentissement
-controls.screenSpacePanning = false; // Permet ou non de déplacer la caméra verticalement
-controls.minDistance = 5; // Distance minimale de la caméra au centre
-controls.maxDistance = 50; // Distance maximale de la caméra au centre
-controls.maxPolarAngle = Math.PI / 2; // Limite la caméra à une vue de dessus (90°)
 
 let model;
 const gltfLoader = new GLTFLoader();
 gltfLoader.load(
-  // "./3D_models/low_poly_male_base(2).glb", 
   "./3D_models/cj_akiyama.glb", 
   (gltf) => {
     model = gltf.scene;
@@ -53,8 +45,7 @@ gltfLoader.load(
     const center = new THREE.Vector3();
     box.getCenter(center);
     model.position.sub(center);
-    model.scale.set(5,5,5)    
-    // model.scale.set(20,20,20)
+    model.scale.set(5,5,5);  
 
     model.rotateY(Math.PI);
 
@@ -162,7 +153,6 @@ function animate(time) {
 
 //   shaderPass.uniforms.time.value = time * 0.001;
 
-    controls.update(); // Met à jour les contrôles  
   composer.render();
   requestAnimationFrame(animate);
 }
@@ -233,8 +223,42 @@ function moveCameraToPoint(target) {
     }
   
     requestAnimationFrame(animateCamera);
+}
+
+function animateCameraToInitialPosition() {
+  const startPosition = camera.position.clone();
+  const startLookAt = new THREE.Vector3();
+  camera.getWorldDirection(startLookAt);
+  startLookAt.add(camera.position); // Obtenir le point que la caméra regarde actuellement
+
+  const duration = 1000; // Durée de l'animation (1 seconde)
+  let startTime = null;
+
+  function animate(time) {
+    if (!startTime) startTime = time;
+    const elapsedTime = time - startTime;
+    const t = Math.min(elapsedTime / duration, 1); // Interpolation (de 0 à 1)
+
+    // Interpolation de la position de la caméra
+    camera.position.lerpVectors(startPosition, initialCameraPosition, t);
+
+    // Interpolation du point regardé
+    const lookAt = new THREE.Vector3();
+    lookAt.lerpVectors(startLookAt, initialCameraLookAt, t);
+    camera.lookAt(lookAt);
+
+    if (t < 1) {
+      requestAnimationFrame(animate); // Continuer tant que l'animation n'est pas terminée
+    }
   }
-  
+
+  requestAnimationFrame(animate);
+}
+
+document.getElementById('resetCamera').addEventListener('click', () => {
+  animateCameraToInitialPosition();
+});
+
 
 
 animate();
