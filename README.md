@@ -3,6 +3,10 @@
 ## 📋 Présentation du projet
 Nous avons participé à la Nuit de l'Info 2024, un hackathon national qui s'est déroulé dans la nuit du jeudi 5 décembre 2024.
 
+## 🎯 Objectifs 
+
+Cette application vise à montrer le lien entre les **océans** et le **corps humain**, tout en proposant une expérience à la fois éducative, interactive et engageante.
+
 ## 🐐 Équipe
 
 Voici les membres de notre équipe :
@@ -17,7 +21,12 @@ Voici les membres de notre équipe :
 ## 🔧 Technologies utilisées
 Les outils et technologies que nous avons exploités pour mener à bien ce projet :
 
-- Langages : 
-- Frameworks : 
-- Base de données : 
-- Outils de collaboration : 
+- Langages : HTML, Javascript, Three.js
+- Outils de collaboration : Discord
+
+## ✨ Défis participés 
+- WORST CODE
+- CAPTCHA 
+- RETRO
+- 3D
+- COOKIE CAUCHEMAR
