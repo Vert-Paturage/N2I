@@ -1,0 +1,207 @@
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dirige les tortues sous-marines</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+        }
+        canvas {
+            border: 2px solid #000;
+        }
+        #startButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #instruction {
+            font-size: 18px;
+            color: #000;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<p id="instruction">Aidez les tortues marines à atteindre leur site de reproduction en évitant les obstacles. Utilisez les touches fléchées pour les diriger.</p>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<button id="startButton">Commencer le jeu</button>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let isGameRunning = false;
+    let turtle = { x: 50, y: 300, width: 60, height: 60, speed: 5 };
+    let obstacles = [];
+    let goal = { x: canvas.width - 100, y: canvas.height / 2 - 25, width: 50, height: 50 };
+    let keyState = { left: false, right: false, up: false, down: false };
+    const turtleImage = new Image();
+    turtleImage.src = "tortue.jpg";
+
+    const startButton = document.getElementById("startButton");
+    startButton.addEventListener("click", startGame);
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    function startGame() {
+        isGameRunning = true;
+        turtle.x = 50;
+        turtle.y = 300;
+        obstacles = [];
+        generateObstacles();
+        startButton.style.display = "none"; 
+        resetKeyState(); 
+        gameLoop();
+    }
+
+    function resetKeyState() {
+        keyState.left = false;
+        keyState.right = false;
+        keyState.up = false;
+        keyState.down = false;
+    }
+
+    function handleKeyDown(event) {
+        if (!isGameRunning) return;
+        if (event.key === "ArrowLeft") keyState.left = true;
+        if (event.key === "ArrowRight") keyState.right = true;
+        if (event.key === "ArrowUp") keyState.up = true;
+        if (event.key === "ArrowDown") keyState.down = true;
+    }
+
+    function handleKeyUp(event) {
+        if (event.key === "ArrowLeft") keyState.left = false;
+        if (event.key === "ArrowRight") keyState.right = false;
+        if (event.key === "ArrowUp") keyState.up = false;
+        if (event.key === "ArrowDown") keyState.down = false;
+    }
+
+    function generateObstacles() {
+        for (let i = 0; i < 5; i++) {
+            let obstacle = {
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height - 50),
+                width: 50,
+                height: 50,
+                speed: Math.random() * 3 + 1  
+            };
+            obstacles.push(obstacle);
+        }
+    }
+
+    function moveObstacles() {
+        for (let i = 0; i < obstacles.length; i++) {
+            obstacles[i].y -= obstacles[i].speed; 
+            if (obstacles[i].y + obstacles[i].height < 0) {
+                obstacles[i].y = canvas.height;
+                obstacles[i].x = Math.random() * (canvas.width - 100) + 50; 
+            }
+        }
+    }
+
+    function checkCollisions() {
+        for (let i = 0; i < obstacles.length; i++) {
+            let obstacle = obstacles[i];
+            if (
+                turtle.x < obstacle.x + obstacle.width &&
+                turtle.x + turtle.width > obstacle.x &&
+                turtle.y < obstacle.y + obstacle.height &&
+                turtle.y + turtle.height > obstacle.y
+            ) {
+                endGame();
+                break;
+            }
+        }
+    }
+
+    function checkGoal() {
+        if (
+            turtle.x < goal.x + goal.width &&
+            turtle.x + turtle.width > goal.x &&
+            turtle.y < goal.y + goal.height &&
+            turtle.y + turtle.height > goal.y
+        ) {
+            winGame();
+        }
+    }
+
+    function moveTurtle() {
+        if (keyState.left && turtle.x > 0) {
+            turtle.x -= turtle.speed;
+        }
+        if (keyState.right && turtle.x < canvas.width - turtle.width) {
+            turtle.x += turtle.speed;
+        }
+        if (keyState.up && turtle.y > 0) {
+            turtle.y -= turtle.speed;
+        }
+        if (keyState.down && turtle.y < canvas.height - turtle.height) {
+            turtle.y += turtle.speed;
+        }
+    }
+
+    // Dessiner la tortue avec une image
+    function drawTurtle() {
+        ctx.drawImage(turtleImage, turtle.x, turtle.y, turtle.width, turtle.height);
+    }
+
+    function drawObstacles() {
+        ctx.fillStyle = "#FF0000";
+        for (let i = 0; i < obstacles.length; i++) {
+            let obstacle = obstacles[i];
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        }
+    }
+
+    function drawGoal() {
+        ctx.fillStyle = "#0000FF";
+        ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+    }
+
+    function gameLoop() {
+        if (!isGameRunning) return; 
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        moveObstacles();
+        checkCollisions();
+        checkGoal();
+        moveTurtle();
+
+        drawTurtle();
+        drawObstacles();
+        drawGoal();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+        isGameRunning = false;
+        alert("Game Over ! Vous avez heurté un obstacle.");
+        startButton.style.display = "block"; 
+    }
+
+    function winGame() {
+        isGameRunning = false;
+        alert("Félicitations ! Vous avez atteint le site de reproduction.");
+        startButton.style.display = "block"; 
+    }
+</script>
+
+</body>
+</html>
