@@ -4,14 +4,14 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Captcha</title>
-	<style>body{margin: 0;}</style>
+	<style>html{height: 100%;} body{margin: 0; text-align: center; height: 100%;} #captcha{vertical-align: center;}</style>
 </head>
 <body>
 	<div id="captcha">
 		<h1 id="captchaTitre">Prouvez que vous n'êtes pas <br><b>humain</b></h1>
 		<p id="enonce">Trouver x</p>
 		<p id="equation">e</p>
-		<input id="response" type="text" placeholder="x = ?">
+		<input id="response" type="number" placeholder="x = ?">
 		<div id="outputtext"></div>
 		<button id="refreshButton" onclick="doRefresh()" style="display: none;">Refresh</button>
 	</div>
@@ -29,6 +29,7 @@
 		function traitementFail() {
 			document.getElementById("outputtext").innerHTML = "Vous n'êtes pas un robot !"
 			document.getElementById("refreshButton").style.display = "inline-block"
+			document.getElementById("response").style.display = "none"
 		}
 
 		function traitementOk() {
