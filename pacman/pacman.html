@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crabe Ramasseur - Jeu avec Fantômes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        #gameCanvas {
+            border: 2px solid #fff;
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Variables du crabe et des objets à manger
+        const crabe = {
+            x: 50,
+            y: 50,
+            size: 20,
+            speed: 4,
+            dx: 0,
+            dy: 0,
+            color: 'orange'
+        };
+
+        const digestifs = [
+            { x: 100, y: 100, size: 10, color: 'green' },
+            { x: 300, y: 200, size: 10, color: 'green' },
+            { x: 200, y: 300, size: 10, color: 'green' }
+        ];
+
+        // Fantômes
+        const fantomes = [
+            { x: 150, y: 150, size: 20, color: 'red', dx: 2, dy: 2 },
+            { x: 250, y: 100, size: 20, color: 'blue', dx: 2, dy: 2 },
+            { x: 50, y: 250, size: 20, color: 'purple', dx: 2, dy: 2 }
+        ];
+
+        // Variable pour compter les pertes
+        let lossCount = 0;
+
+        // Fonction pour dessiner le crabe
+        function drawCrabe() {
+            ctx.beginPath();
+            ctx.arc(crabe.x, crabe.y, crabe.size, 0, Math.PI * 2);
+            ctx.fillStyle = crabe.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Fonction pour dessiner les digestifs
+        function drawDigestifs() {
+            digestifs.forEach(digestif => {
+                ctx.beginPath();
+                ctx.arc(digestif.x, digestif.y, digestif.size, 0, Math.PI * 2);
+                ctx.fillStyle = digestif.color;
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        // Fonction pour dessiner les fantômes
+        function drawFantomes() {
+            fantomes.forEach(fantome => {
+                ctx.beginPath();
+                ctx.arc(fantome.x, fantome.y, fantome.size, 0, Math.PI * 2);
+                ctx.fillStyle = fantome.color;
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        // Déplacer les fantômes
+        function moveFantomes() {
+            fantomes.forEach(fantome => {
+                fantome.x += fantome.dx;
+                fantome.y += fantome.dy;
+
+                // Collision avec les bords de l'écran
+                if (fantome.x - fantome.size < 0 || fantome.x + fantome.size > canvas.width) fantome.dx *= -1;
+                if (fantome.y - fantome.size < 0 || fantome.y + fantome.size > canvas.height) fantome.dy *= -1;
+            });
+        }
+
+        // Vérifier la collision entre le crabe et les digestifs
+        function checkDigestifCollision() {
+            digestifs.forEach((digestif, index) => {
+                const dist = Math.sqrt(Math.pow(crabe.x - digestif.x, 2) + Math.pow(crabe.y - digestif.y, 2));
+                if (dist < crabe.size + digestif.size) {
+                    digestifs.splice(index, 1); // Supprimer le digestif ramassé
+                    // Ajouter un nouveau digestif à une position aléatoire
+                    digestifs.push({
+                        x: Math.random() * (canvas.width - 20),
+                        y: Math.random() * (canvas.height - 20),
+                        size: 10,
+                        color: 'green'
+                    });
+                }
+            });
+        }
+
+        // Vérifier la collision entre le crabe et les fantômes
+        function checkFantomeCollision() {
+            fantomes.forEach(fantome => {
+                const dist = Math.sqrt(Math.pow(crabe.x - fantome.x, 2) + Math.pow(crabe.y - fantome.y, 2));
+                if (dist < crabe.size + fantome.size) {
+                    lossCount++; // Incrémenter le nombre de pertes
+                    if (lossCount >= 3) {
+                        alert('Vous avez perdu 3 fois. Le jeu est terminé !');
+                        return;
+                    }
+                    resetGame(); // Réinitialiser le jeu si le crabe touche un fantôme
+                }
+            });
+        }
+
+        // Réinitialiser le jeu
+        function resetGame() {
+            crabe.x = 50;
+            crabe.y = 50;
+            crabe.dx = 0;
+            crabe.dy = 0;
+
+            // Réinitialiser les digestifs
+            digestifs.length = 0;
+            digestifs.push(
+                { x: 100, y: 100, size: 10, color: 'green' },
+                { x: 300, y: 200, size: 10, color: 'green' },
+                { x: 200, y: 300, size: 10, color: 'green' }
+            );
+
+            // Réinitialiser les fantômes
+            fantomes.forEach(fantome => {
+                fantome.x = Math.random() * (canvas.width - 40) + 20;
+                fantome.y = Math.random() * (canvas.height - 40) + 20;
+            });
+        }
+
+        // Fonction de mise à jour du jeu
+        function updateGame() {
+            if (lossCount >= 3) return; // Arrêter le jeu après 3 pertes
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Effacer l'écran
+
+            drawCrabe();
+            drawDigestifs();
+            drawFantomes();
+
+            moveFantomes();
+            checkDigestifCollision();
+            checkFantomeCollision();
+
+            // Déplacer le crabe
+            crabe.x += crabe.dx;
+            crabe.y += crabe.dy;
+
+            // Détection des collisions avec les bords du canevas
+            if (crabe.x - crabe.size < 0) crabe.x = crabe.size;
+            if (crabe.x + crabe.size > canvas.width) crabe.x = canvas.width - crabe.size;
+            if (crabe.y - crabe.size < 0) crabe.y = crabe.size;
+            if (crabe.y + crabe.size > canvas.height) crabe.y = canvas.height - crabe.size;
+
+            requestAnimationFrame(updateGame);  // Continuer la boucle de jeu
+        }
+
+        // Fonction pour gérer les touches
+        function moveCrabe(e) {
+            if (e.key === 'ArrowUp') crabe.dy = -crabe.speed;
+            if (e.key === 'ArrowDown') crabe.dy = crabe.speed;
+            if (e.key === 'ArrowLeft') crabe.dx = -crabe.speed;
+            if (e.key === 'ArrowRight') crabe.dx = crabe.speed;
+        }
+
+        function stopCrabe(e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') crabe.dy = 0;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') crabe.dx = 0;
+        }
+
+        // Écouter les événements de touches
+        document.addEventListener('keydown', moveCrabe);
+        document.addEventListener('keyup', stopCrabe);
+
+        // Commencer le jeu
+        updateGame();
+    </script>
+</body>
+</html>
