@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captcha - Guidez le sang de l'océan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        .captcha-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h2 {
+            text-align: center;
+            color: #2f4f4f;
+        }
+        .question {
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .response {
+            font-size: 16px;
+            color: #2f4f4f;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="captcha-container">
+        <h2>Captcha - Guidez le sang de l'océan</h2>
+        
+        <form id="captchaForm">
+            <div class="question">
+                <p><strong>1. Quel est le super-héros des océans qui aide à faire circuler les nutriments ?</strong></p>
+                <ul class="options">
+                    <li><input type="radio" name="q1" value="a"> a) Captain Planète</li>
+                    <li><input type="radio" name="q1" value="b"> b) Aquaman</li>
+                    <li><input type="radio" name="q1" value="c"> c) Le courant marin</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <p><strong>2. Quel est l’obstacle le plus dangereux pour un courant marin ?</strong></p>
+                <ul class="options">
+                    <li><input type="radio" name="q2" value="a"> a) Un filet de pêche</li>
+                    <li><input type="radio" name="q2" value="b"> b) Un requin en colère</li>
+                    <li><input type="radio" name="q2" value="c"> c) Un récif qui mange des bonbons</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <p><strong>3. Quel est l’objectif principal du sang de l’océan ?</strong></p>
+                <ul class="options">
+                    <li><input type="radio" name="q3" value="a"> a) Se balader à la vitesse d’un dauphin</li>
+                    <li><input type="radio" name="q3" value="b"> b) Traverser les océans en slow motion</li>
+                    <li><input type="radio" name="q3" value="c"> c) Arriver à un récif avant qu’il s’étouffe</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <p><strong>4. Quel est le véritable "cœur" des océans ?</strong></p>
+                <ul class="options">
+                    <li><input type="radio" name="q4" value="a"> a) Les baleines (elles ont un gros cœur)</li>
+                    <li><input type="radio" name="q4" value="b"> b) Les courants marins (ils transportent la vie)</li>
+                    <li><input type="radio" name="q4" value="c"> c) Les poissons-clowns (ils sont pleins de surprises)</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="btn-submit">Valider</button>
+        </form>
+
+        <div id="response" class="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('captchaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let score = 0;
+            const responses = {
+                q1: 'b', // Aquaman
+                q2: 'a', // Filet de pêche
+                q3: 'c', // Arriver à un récif avant qu’il s’étouffe
+                q4: 'b'  // Les courants marins
+            };
+
+            const formData = new FormData(event.target);
+            for (const [name, value] of formData) {
+                if (responses[name] === value) {
+                    score++;
+                }
+            }
+
+            const responseText = (score === 4) 
+                ? "Bravo ! Vous avez réussi à guider le sang de l'océan ! 🚢🌊" 
+                : "Oups, il semble que vous ayez fait une erreur. Essayez encore ! 🌊🐋";
+
+            document.getElementById('response').textContent = responseText;
+        });
+    </script>
+
+</body>
+</html>
