@@ -7,6 +7,7 @@
   "description": "## 📋 Présentation du projet Nous avons participé à la Nuit de l'Info 2024, un hackathon national qui s'est déroulé dans la nuit du jeudi 5 décembre 2024.",
   "main": "main.js",
   "scripts": {
+    "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
