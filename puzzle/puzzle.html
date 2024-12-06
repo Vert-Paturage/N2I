@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puzzle : Fonds Marins</title>
-    <style>
+
+	<style>
         body {
             display: flex;
             flex-direction: column;
@@ -43,8 +38,6 @@
             margin-top: 10px;
         }
     </style>
-</head>
-<body>
     <h1>Puzzle : Fonds Marins</h1>
     <p id="instructions">Assemblez le puzzle pour reconstituer le fond marin !</p>
     <div class="puzzle-container">
@@ -61,7 +54,7 @@
         const referenceImage = document.getElementById("referenceImage");
 
         // Variables du puzzle
-        const imageSrc = "marrin.jpg"; // Remplacez par l'URL de votre image
+        const imageSrc = "/puzzle/marrin.jpg"; // Remplacez par l'URL de votre image
         const rows = 3; // Nombre de lignes
         const cols = 4; // Nombre de colonnes
         const pieceWidth = canvas.width / cols; // Largeur d'une pièce (150px)
@@ -255,5 +248,3 @@
             }
         });
     </script>
-</body>
-</html>

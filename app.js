@@ -160,6 +160,13 @@ function animate(time) {
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+const popupOverlay = document.getElementById("popup-overlay")
+popupOverlay.addEventListener("click", (e) => {
+	if(e.target === popupOverlay) {
+		popupOverlay.style.display = "none"
+	}
+})
+
 // Détecter le clic de la souris
 window.addEventListener('click', (event) => {
   // Normaliser les coordonnées de la souris
@@ -172,25 +179,41 @@ window.addEventListener('click', (event) => {
   // Vérifier les intersections  
   if (raycaster.intersectObject(coeur_point).length > 0) {
     moveCameraToPoint(coeur_point);
+	openPopup("/obstacle/obstacle.html")
+  }
+
+  if (raycaster.intersectObject(poumon_point).length > 0) {
+	moveCameraToPoint(poumon_point)
+	openPopup("/jeu-poumons/poumons.html")
   }
   
   if (raycaster.intersectObject(foie_point).length > 0) {
     moveCameraToPoint(foie_point);
+	openPopup("/recuperation/index.html")
   }
 
   if (raycaster.intersectObject(intestin_point).length > 0) {
     moveCameraToPoint(intestin_point);
+	openPopup("/pacman/pacman.html")
   }
 
   if (raycaster.intersectObject(tibia_point).length > 0) {
     moveCameraToPoint(tibia_point);
+	openPopup("/puzzle/puzzle.html")
   }
 
   if (raycaster.intersectObject(system_nerveux_point).length > 0) {
     moveCameraToPoint(system_nerveux_point);
+
   }
 });
 
+function openPopup(path) {
+	const popup = document.getElementById('popup-overlay');
+    popup.classList.remove('hidden');
+	
+	window.location.href = path
+}
 
 function moveCameraToPoint(target) {
     // Position cible (point + distance pour un zoom ajusté)
