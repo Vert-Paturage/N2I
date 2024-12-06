@@ -48,19 +48,19 @@
         </div>
         <p id="score">Score : 0</p>
         <p id="timer">Temps : 0s</p>
-        <p id="winMessage"></p> <!-- Message de victoire -->
+        <p id="winMessage"></p> 
 
         <script>
             const canvas = document.getElementById("puzzleCanvas");
             const ctx = canvas.getContext("2d");
             const referenceImage = document.getElementById("referenceImage");
 
-            // Variables du puzzle
-            const imageSrc = "/puzzle/marrin.jpg"; // Remplacez par l'URL de votre image
-            const rows = 3; // Nombre de lignes
-            const cols = 4; // Nombre de colonnes
-            const pieceWidth = canvas.width / cols; // Largeur d'une pièce (150px)
-            const pieceHeight = canvas.height / rows; // Hauteur d'une pièce (102px)
+            
+            const imageSrc = "/puzzle/marrin.jpg"; 
+            const rows = 3; 
+            const cols = 4; 
+            const pieceWidth = canvas.width / cols; 
+            const pieceHeight = canvas.height / rows; 
             let pieces = [];
             let slots = [];
             let selectedPiece = null;
@@ -68,7 +68,7 @@
             let startTime = null;
             let timerInterval;
 
-            // Charger l'image
+           
             const image = new Image();
             image.src = imageSrc;
 
@@ -78,10 +78,10 @@
                 initPuzzle();
                 drawPuzzle();
 
-                // Afficher l'image miniature de référence
+                
                 referenceImage.src = imageSrc;
 
-                // Démarrer le chronomètre dès que l'image est chargée
+                
                 startTimer();
             };
 
@@ -89,7 +89,7 @@
                 alert("L'image ne peut pas être chargée. Veuillez vérifier l'URL.");
             };
 
-            // Initialiser les emplacements fixes
+            
             function initSlots() {
                 slots = [];
                 for (let row = 0; row < rows; row++) {
@@ -104,7 +104,7 @@
                 }
             }
 
-            // Initialiser les pièces du puzzle
+            
             function initPuzzle() {
                 pieces = [];
                 for (let row = 0; row < rows; row++) {
@@ -122,20 +122,20 @@
                 }
             }
 
-            // Dessiner le puzzle
+            
             function drawPuzzle() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Dessiner les emplacements fixes (slots)
+            
                 slots.forEach(slot => {
                     ctx.strokeStyle = "#000";
                     ctx.lineWidth = 2;
                     ctx.strokeRect(slot.x, slot.y, slot.width, slot.height);
                 });
 
-                // Dessiner les pièces
+               
                 pieces.forEach(piece => {
-                    // Découpe de l'image pour chaque pièce
+                    
                     ctx.drawImage(
                         image,
                         piece.correctX,
@@ -151,31 +151,30 @@
                     ctx.strokeRect(piece.x, piece.y, pieceWidth, pieceHeight);
                 });
 
-                // Vérifier si toutes les pièces sont au bon endroit
+                
                 checkWin();
             }
 
-            // Vérifier si la pièce est proche de son emplacement correct
             function isCorrectPosition(piece) {
-                const threshold = 10; // Tolérance pour placer une pièce
+                const threshold = 10; 
                 return (
                     Math.abs(piece.x - piece.correctX) < threshold &&
                     Math.abs(piece.y - piece.correctY) < threshold
                 );
             }
 
-            // Vérifier si le joueur a gagné
+          
             function checkWin() {
                 let isWin = true;
 
-                // Vérifier si chaque pièce est à la bonne place
+               
                 pieces.forEach(piece => {
                     if (!isCorrectPosition(piece)) {
                         isWin = false;
                     }
                 });
 
-                // Afficher un message de victoire si toutes les pièces sont à leur place
+               
                 const winMessage = document.getElementById("winMessage");
                 if (isWin) {
                     winMessage.innerHTML = `
@@ -205,30 +204,28 @@
                 <li>Stockent du carbone et des nutriments essentiels.</li>
                 <li>Maintiennent la stabilité des écosystèmes, comme les os pour notre corps.</li>
             </ul>
-        `;                stopTimer(); // Arrêter le chronomètre lorsque le joueur a gagné
+        `;                stopTimer();
                 } else {
-                    winMessage.textContent = ""; // Si pas encore gagné, enlever le message
+                    winMessage.textContent = ""; 
                 }
             }
 
-            // Démarrer le chronomètre
+        
             function startTimer() {
                 startTime = Date.now();
                 timerInterval = setInterval(updateTimer, 1000);
             }
 
-            // Mettre à jour le chronomètre
             function updateTimer() {
                 const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
                 document.getElementById("timer").textContent = `Temps : ${elapsedTime}s`;
             }
 
-            // Arrêter le chronomètre
             function stopTimer() {
                 clearInterval(timerInterval);
             }
 
-            // Déplacer une pièce
+            
             function movePiece(e) {
                 if (selectedPiece) {
                     const rect = canvas.getBoundingClientRect();
@@ -238,7 +235,7 @@
                 }
             }
 
-            // Gérer les événements de la souris
+        
             canvas.addEventListener("mousedown", (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
@@ -263,11 +260,10 @@
                 if (selectedPiece) {
                     selectedPiece.isDragging = false;
 
-                    // Si proche de la position correcte, aligner
                     if (isCorrectPosition(selectedPiece)) {
                         selectedPiece.x = selectedPiece.correctX;
                         selectedPiece.y = selectedPiece.correctY;
-                        score += 10; // Ajouter 10 points pour chaque pièce placée correctement
+                        score += 10;
                         document.getElementById("score").textContent = `Score : ${score}`;
                     }
 

@@ -1,9 +1,9 @@
-// Configuration du jeu Phaser
+
 const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    backgroundColor: '#87CEEB',  // Couleur de fond bleu clair pour simuler l'océan
+    backgroundColor: '#87CEEB',  
     scene: {
         preload: preload,
         create: create,
@@ -15,61 +15,60 @@ let boat;
 let trash;
 let score = 0;
 let scoreText;
-let timer = 30;  // Durée du jeu en secondes
+let timer = 30;  
 let timerText;
-let gameOver = false;  // Variable pour vérifier si le jeu est terminé
+let gameOver = false;  
 let gameOverText;
-let educationalText; // Variable pour le texte éducatif
+let educationalText; 
 
 const game = new Phaser.Game(config);
 
 function preload() {
-    // Aucun chargement d'image n'est nécessaire ici
+    
 }
 
 function create() {
-    // Création du bateau (un carré rouge)
-    boat = this.physics.add.rectangle(400, 500, 100, 50, 0xff0000); // Bateau sous forme de rectangle rouge
+    boat = this.physics.add.rectangle(400, 500, 100, 50, 0xff0000); 
     boat.setCollideWorldBounds(true);
 
-    // Création des déchets (des carrés verts)
+  
     trash = this.physics.add.group({
         key: 'trash',
         repeat: 4,
         setXY: { x: Phaser.Math.Between(100, 700), y: 0, stepX: 150 }
     });
 
-    // Remplir les déchets avec des carrés verts
+   
     trash.children.iterate(function (child) {
-        child.setDisplaySize(50, 50); // Déchets sous forme de carrés de 50x50
-        child.setFill(0x00ff00); // Couleur verte
+        child.setDisplaySize(50, 50); 
+        child.setFill(0x00ff00); 
     });
 
-    // Définir les mouvements du bateau avec une vitesse ajustée
+   
     this.input.on('pointermove', function (pointer) {
         if (!gameOver) {
-            boat.x += (pointer.x - boat.x) * 0.1; // Déplacement du bateau avec une certaine vitesse
+            boat.x += (pointer.x - boat.x) * 0.1; 
         }
     });
 
-    // Gestion des collisions entre le bateau et les déchets
+   
     this.physics.add.collider(boat, trash, gameOverFunction, null, this);
 
-    // Affichage du score
+  
     scoreText = this.add.text(16, 16, 'Score: 0', {
         fontSize: '32px',
         fill: '#fff'
     });
 
-    // Afficher le timer en haut à droite avec couleur noire
+   
     timerText = this.add.text(650, 16, 'Time: 30', {
         fontSize: '32px',
-        fill: '#000000'  // Couleur du texte en noir
+        fill: '#000000'  
     });
 
-    // Mettre à jour le timer toutes les secondes
+  
     this.time.addEvent({
-        delay: 1000,  // Chaque seconde
+        delay: 1000, 
         callback: updateTimer,
         callbackScope: this,
         loop: true
@@ -78,10 +77,10 @@ function create() {
 
 function update() {
     if (gameOver) {
-        return;  // Ne rien faire si le jeu est terminé
+        return;  
     }
 
-    // Déplacer les déchets vers le bas
+    
     trash.children.iterate(function (child) {
         child.y += 2;
         if (child.y > 600) {
@@ -92,47 +91,45 @@ function update() {
 }
 
 function collectTrash(boat, trashItem) {
-    if (gameOver) return; // Ne rien faire si le jeu est terminé
-    // Quand le bateau collecte un déchet
+    if (gameOver) return; 
+   
     trashItem.y = 0;
     trashItem.x = Phaser.Math.Between(100, 700);
-    score += 10; // Ajouter des points
+    score += 10; 
     scoreText.setText('Score: ' + score);
 }
 
 function gameOverFunction(boat, trashItem) {
-    // Fonction qui est appelée quand une collision est détectée
-    gameOver = true; // Activer la fin du jeu
-    // Afficher un texte de fin
+    
+    gameOver = true; 
+  
     gameOverText = this.add.text(400, 300, 'Game Over', {
         fontSize: '64px',
         fill: '#ff0000'
-    }).setOrigin(0.5);  // Centrer le texte
+    }).setOrigin(0.5); 
     
-    // Afficher le message éducatif
+    
     showEducationalMessage(this);
 }
 
 function updateTimer() {
-    if (gameOver) return; // Ne pas mettre à jour le timer si le jeu est terminé
-    timer--; // Réduire le temps
-    timerText.setText('Time: ' + timer); // Mettre à jour l'affichage du temps
+    if (gameOver) return; 
+    timer--; 
+    timerText.setText('Time: ' + timer);
 
     if (timer <= 0) {
-        gameOver = true;  // Fin du jeu lorsque le temps est écoulé
+        gameOver = true;  
         gameOverText = this.add.text(400, 300, 'Game Over', {
             fontSize: '64px',
             fill: '#ff0000'
-        }).setOrigin(0.5);  // Centrer le texte
+        }).setOrigin(0.5); 
 
-        // Afficher le message éducatif
+       
         showEducationalMessage(this);
     }
 }
 
-// Fonction pour afficher le message éducatif après la fin du jeu
 function showEducationalMessage(scene) {
-    // Texte éducatif à afficher
     const educationalMessage = [
         "Mission accomplie, les mangroves sont purifiées ! 🌿💧",
         "Les mangroves, comme votre foie, jouent un rôle vital de filtration.",
@@ -157,13 +154,12 @@ function showEducationalMessage(scene) {
         "• Abritent une biodiversité essentielle et capturent de grandes quantités de CO₂."
     ];
 
-    // Afficher chaque ligne du message éducatif
-    let textY = 350; // Position Y de départ pour afficher le texte éducatif
+    let textY = 350; 
     educationalMessage.forEach((line, index) => {
         scene.add.text(400, textY + (index * 30), line, {
             fontSize: '20px',
             fill: '#000000',
             align: 'center'
-        }).setOrigin(0.5); // Centrer le texte
+        }).setOrigin(0.5); 
     });
 }

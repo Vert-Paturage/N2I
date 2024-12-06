@@ -5,7 +5,6 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 
-// Scène et caméra
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -19,10 +18,8 @@ camera.lookAt(0, 0, 0);
 const initialCameraPosition = camera.position.clone();
 const initialCameraLookAt = new THREE.Vector3(0, 0, 0);
 
-
-// Rendu
 const renderer = new THREE.WebGLRenderer();
-renderer.setClearColor(0x000000, 1); // Fond noir
+renderer.setClearColor(0x000000, 1); 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -33,8 +30,8 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
-const topLight = new THREE.PointLight(0xffffff, 1000, 50); // Lumière blanche, intensité 1.5, portée 50
-topLight.position.set(0, 10, 0); // Position au-dessus du modèle
+const topLight = new THREE.PointLight(0xffffff, 1000, 50); 
+topLight.position.set(0, 10, 0); 
 scene.add(topLight);
 
 let model;
@@ -44,7 +41,6 @@ gltfLoader.load(
   (gltf) => {
     model = gltf.scene;
 
-    // Centrer le modèle
     const box = new THREE.Box3().setFromObject(model);
     const center = new THREE.Vector3();
     box.getCenter(center);
@@ -119,11 +115,9 @@ const systemNerveuxClickable = createClickableArea(new THREE.Vector3(0, 3, 1));
 clickablePoints.push({ ring: systemNerveuxRing, area: systemNerveuxClickable, game: "/tortues/tortues.html" });
 
 
-// Composer pour post-processing
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
-// Shader pour effet VHS
 const vhsShader = {
   uniforms: {
     tDiffuse: { value: null },
@@ -193,20 +187,17 @@ popupOverlay.addEventListener("click", (e) => {
 	}
 })
 
-// Détecter le clic de la souris
+
 window.addEventListener('click', (event) => {
-  // Normaliser les coordonnées de la souris
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  // Mettre à jour le raycaster
   raycaster.setFromCamera(mouse, camera);
 
-    // Vérifier les intersections
+    
     const intersects = raycaster.intersectObjects(clickablePoints.map(p => p.area));
 
     if (intersects.length > 0) {
-      // Trouver l'objet cliqué
       const clickedPoint = clickablePoints.find(p => p.area === intersects[0].object);
   
       if (clickedPoint) {
@@ -226,30 +217,28 @@ function openPopup(path) {
 }
 
 function moveCameraToPoint(target) {
-    // Position cible (point + distance pour un zoom ajusté)
+    
     const targetPosition = new THREE.Vector3();
-    target.ring.getWorldPosition(targetPosition); // Obtenir la position globale du point
+    target.ring.getWorldPosition(targetPosition);
   
-    const offset = new THREE.Vector3(0, 1, 3); // Ajustez cet offset pour définir la distance par rapport au point
+    const offset = new THREE.Vector3(0, 1, 3);
     const finalPosition = targetPosition.clone().add(offset);
   
-    // Animations
+    
     const startPosition = camera.position.clone();
-    const duration = 3000; // Durée de l'animation (en ms)
+    const duration = 3000; 
     let startTime = null;
   
     function animateCamera(time) {
       if (!startTime) startTime = time;
       const elapsedTime = time - startTime;
-      const t = Math.min(elapsedTime / duration, 1); // Interpolation (0 à 1)
+      const t = Math.min(elapsedTime / duration, 1); 
   
-      // Interpolation de la position
+   
       camera.position.lerpVectors(startPosition, finalPosition, t);
   
-      // Faire en sorte que la caméra regarde le point
       camera.lookAt(targetPosition);
   
-      // Continuer l'animation tant que `t` n'a pas atteint 1
       if (t < 1) {
         requestAnimationFrame(animateCamera);
       }
@@ -265,26 +254,24 @@ function animateCameraToInitialPosition() {
   const startPosition = camera.position.clone();
   const startLookAt = new THREE.Vector3();
   camera.getWorldDirection(startLookAt);
-  startLookAt.add(camera.position); // Obtenir le point que la caméra regarde actuellement
+  startLookAt.add(camera.position);
 
-  const duration = 1000; // Durée de l'animation (1 seconde)
+  const duration = 1000; 
   let startTime = null;
 
   function animate(time) {
     if (!startTime) startTime = time;
     const elapsedTime = time - startTime;
-    const t = Math.min(elapsedTime / duration, 1); // Interpolation (de 0 à 1)
+    const t = Math.min(elapsedTime / duration, 1);
 
-    // Interpolation de la position de la caméra
     camera.position.lerpVectors(startPosition, initialCameraPosition, t);
 
-    // Interpolation du point regardé
     const lookAt = new THREE.Vector3();
     lookAt.lerpVectors(startLookAt, initialCameraLookAt, t);
     camera.lookAt(lookAt);
 
     if (t < 1) {
-      requestAnimationFrame(animate); // Continuer tant que l'animation n'est pas terminée
+      requestAnimationFrame(animate);
     }
   }
 

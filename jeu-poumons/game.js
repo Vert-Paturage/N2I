@@ -76,23 +76,21 @@ function drawTitle() {
     ctx.fillText("Clique sur les polluants pour restaurer les récifs coralliens !", canvas.width / 2, 80);
 }
 
-// Afficher les félicitations et le score final
+
 function drawGameOver() {
-    // Changer la position du texte pour qu'il soit en haut et centré
     ctx.font = "50px Arial";
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
-    ctx.fillText("Félicitations !", canvas.width / 2, 50); // Placer en haut du canvas
+    ctx.fillText("Félicitations !", canvas.width / 2, 50);
     ctx.font = "30px Arial";
-    ctx.fillText(`Votre récif est restauré. Score final : ${score}`, canvas.width / 2, 100); // Positionner plus bas
-    ctx.fillText("Merci d'avoir aidé à protéger les océans !", canvas.width / 2, 150); // Positionner un peu plus bas
+    ctx.fillText(`Votre récif est restauré. Score final : ${score}`, canvas.width / 2, 100); 
+    ctx.fillText("Merci d'avoir aidé à protéger les océans !", canvas.width / 2, 150); 
 
-    // Ajouter le texte descriptif juste en dessous
     ctx.font = "20px Arial";
     ctx.textAlign = "left";
-    const textX = 20; // Position X pour l'alignement à gauche
-    const textY = 180; // Position de départ Y, après les titres
-    const lineHeight = 25; // Hauteur entre les lignes
+    const textX = 20; 
+    const textY = 180; 
+    const lineHeight = 25; 
     const lines = [
         "Félicitations, vous avez redonné vie au récif ! 🪸💨",
         "Les récifs coralliens sont les poumons des océans. Tout comme vos",
@@ -125,24 +123,21 @@ function drawGameOver() {
     });
 }
 
-// Afficher le score avec un fond contrasté
 function drawScore() {
     const padding = 10;
     const text = `Score : ${score}`;
     const textWidth = ctx.measureText(text).width;
 
-    // Fond sombre pour le score
     ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
     ctx.fillRect(10, 10, textWidth + padding * 2, 40);
 
-    // Texte blanc par-dessus
     ctx.font = "20px Arial";
     ctx.fillStyle = "white";
     ctx.textAlign = "left";
     ctx.fillText(text, 20, 40);
 }
 
-// Mettre à jour l'écran
+
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -159,5 +154,4 @@ function update() {
     requestAnimationFrame(update);
 }
 
-// Démarrer le jeu
 update();

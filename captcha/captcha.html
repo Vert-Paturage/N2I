@@ -106,7 +106,6 @@
                 </ul>
             </div>
 
-            <!-- Cœur qui doit être cliqué 4 fois rapidement -->
             <div class="question">
                 <p><strong>5. Cliquez sur le cœur !</strong></p>
                 <div id="heart" class="heart">❤️</div>
@@ -129,21 +128,18 @@
         heart.addEventListener('click', function() {
             clickCount++;
 
-            // Applique l'effet de clic (agrandissement)
             heart.classList.add('clicked');
 
-            // Après un certain délai, rétrécit le cœur
             setTimeout(function() {
                 heart.classList.remove('clicked');
-            }, 300); // Rétrécir après 300ms
+            }, 300); 
 
-            // Si le cœur a été cliqué 4 fois, affiche le bouton "Valider"
+            
             if (clickCount >= 4) {
                 button.classList.add('visible');
             }
         });
 
-        // Action du bouton "Valider"
         button.addEventListener('click', function() {
             let score = 0;
             const responses = {
