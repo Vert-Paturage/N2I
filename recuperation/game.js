@@ -19,6 +19,7 @@ let timer = 30;  // Durée du jeu en secondes
 let timerText;
 let gameOver = false;  // Variable pour vérifier si le jeu est terminé
 let gameOverText;
+let educationalText; // Variable pour le texte éducatif
 
 const game = new Phaser.Game(config);
 
@@ -107,6 +108,9 @@ function gameOverFunction(boat, trashItem) {
         fontSize: '64px',
         fill: '#ff0000'
     }).setOrigin(0.5);  // Centrer le texte
+    
+    // Afficher le message éducatif
+    showEducationalMessage(this);
 }
 
 function updateTimer() {
@@ -120,5 +124,46 @@ function updateTimer() {
             fontSize: '64px',
             fill: '#ff0000'
         }).setOrigin(0.5);  // Centrer le texte
+
+        // Afficher le message éducatif
+        showEducationalMessage(this);
     }
+}
+
+// Fonction pour afficher le message éducatif après la fin du jeu
+function showEducationalMessage(scene) {
+    // Texte éducatif à afficher
+    const educationalMessage = [
+        "Mission accomplie, les mangroves sont purifiées ! 🌿💧",
+        "Les mangroves, comme votre foie, jouent un rôle vital de filtration.",
+        "Elles éliminent les impuretés et protègent les écosystèmes environnants,",
+        "tout comme votre foie nettoie votre sang pour garder votre corps en bonne santé.",
+        "",
+        "Mangroves et foie : un duo purificateur",
+        "Votre foie filtre les toxines pour empêcher leur accumulation dans votre organisme.",
+        "De même, les mangroves absorbent les polluants et stabilisent les sols,",
+        "préservant ainsi la qualité de l’eau et la vie marine. Si elles sont surchargées",
+        "par des déchets, leur « fonction purificatrice » s’effondre, mettant en péril l’écosystème.",
+        "",
+        "Les menaces pour les mangroves",
+        "• Déchets plastiques : empêchent les racines de respirer et de filtrer l’eau.",
+        "• Produits chimiques : empoisonnent les sols et les organismes qui en dépendent.",
+        "• Déforestation : détruit leur capacité naturelle à protéger les côtes et filtrer l’eau.",
+        "",
+        "Pourquoi préserver les mangroves ?",
+        "Elles agissent comme un « foie de la planète » :",
+        "• Purifient l’eau des polluants.",
+        "• Protègent les côtes contre les tempêtes et l’érosion.",
+        "• Abritent une biodiversité essentielle et capturent de grandes quantités de CO₂."
+    ];
+
+    // Afficher chaque ligne du message éducatif
+    let textY = 350; // Position Y de départ pour afficher le texte éducatif
+    educationalMessage.forEach((line, index) => {
+        scene.add.text(400, textY + (index * 30), line, {
+            fontSize: '20px',
+            fill: '#000000',
+            align: 'center'
+        }).setOrigin(0.5); // Centrer le texte
+    });
 }

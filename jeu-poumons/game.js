@@ -78,13 +78,51 @@ function drawTitle() {
 
 // Afficher les félicitations et le score final
 function drawGameOver() {
+    // Changer la position du texte pour qu'il soit en haut et centré
     ctx.font = "50px Arial";
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
-    ctx.fillText("Félicitations !", canvas.width / 2, canvas.height / 2 - 20);
+    ctx.fillText("Félicitations !", canvas.width / 2, 50); // Placer en haut du canvas
     ctx.font = "30px Arial";
-    ctx.fillText(`Votre récif est restauré. Score final : ${score}`, canvas.width / 2, canvas.height / 2 + 20);
-    ctx.fillText("Merci d'avoir aidé à protéger les océans !", canvas.width / 2, canvas.height / 2 + 60);
+    ctx.fillText(`Votre récif est restauré. Score final : ${score}`, canvas.width / 2, 100); // Positionner plus bas
+    ctx.fillText("Merci d'avoir aidé à protéger les océans !", canvas.width / 2, 150); // Positionner un peu plus bas
+
+    // Ajouter le texte descriptif juste en dessous
+    ctx.font = "20px Arial";
+    ctx.textAlign = "left";
+    const textX = 20; // Position X pour l'alignement à gauche
+    const textY = 180; // Position de départ Y, après les titres
+    const lineHeight = 25; // Hauteur entre les lignes
+    const lines = [
+        "Félicitations, vous avez redonné vie au récif ! 🪸💨",
+        "Les récifs coralliens sont les poumons des océans. Tout comme vos",
+        "poumons filtrent l’air et vous permettent de respirer, les coraux",
+        "produisent de l’oxygène et abritent une biodiversité essentielle.",
+        "",
+        "Les récifs et les poumons : une ressemblance frappante",
+        "Vos poumons aspirent de l’air pur et rejettent le CO₂. De même,",
+        "les récifs coralliens maintiennent l’équilibre des écosystèmes",
+        "marins. Quand ils sont asphyxiés par les algues ou les polluants,",
+        "c’est tout l’océan qui en souffre, un peu comme si vos poumons",
+        "étaient encombrés.",
+        "",
+        "Les menaces pour les récifs",
+        "• Pollution plastique et chimique : comme la fumée ou les toxines",
+        "  pour nos poumons.",
+        "• Réchauffement des eaux : entraîne le blanchissement des coraux,",
+        "  réduisant leur capacité à nourrir l’océan.",
+        "• Algues envahissantes : étouffent les récifs en privant",
+        "  l’écosystème de lumière et d’oxygène.",
+        "",
+        "Pourquoi protéger les récifs ?",
+        "Les récifs coralliens produisent une partie de l’oxygène de l’océan,",
+        "protègent les côtes et servent de refuge à 25% des espèces marines.",
+        "Leur santé est aussi cruciale que celle de vos propres poumons !"
+    ];
+
+    lines.forEach((line, index) => {
+        ctx.fillText(line, textX, textY + index * lineHeight);
+    });
 }
 
 // Afficher le score avec un fond contrasté

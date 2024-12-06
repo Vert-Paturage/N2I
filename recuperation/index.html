@@ -29,7 +29,7 @@
 
     .instruction {
       font-size: 18px;
-      color: white;
+      color: rgb(246, 5, 234);
       margin-top: 10px;
     }
 
@@ -140,8 +140,33 @@
         clearInterval(gameInterval);
         document.getElementById("timerDisplay").innerText = "Temps écoulé!";
         document.querySelector('.instruction').innerText = "Le jeu est terminé! Votre score final est " + score;
-      }
-    }
+        displayEducationalMessage();
+  }
+}
+
+function displayEducationalMessage() {
+  const message = `
+    Mission accomplie, les mangroves sont purifiées ! 🌿💧
+    Les mangroves, comme votre foie, jouent un rôle vital de filtration. Elles éliminent les impuretés et protègent les écosystèmes environnants, tout comme votre foie nettoie votre sang pour garder votre corps en bonne santé.
+    
+    Mangroves et foie : un duo purificateur
+    Votre foie filtre les toxines pour empêcher leur accumulation dans votre organisme. De même, les mangroves absorbent les polluants et stabilisent les sols, préservant ainsi la qualité de l’eau et la vie marine. Si elles sont surchargées par des déchets, leur « fonction purificatrice » s’effondre, mettant en péril l’écosystème.
+    
+    Les menaces pour les mangroves :
+    • Déchets plastiques : empêchent les racines de respirer et de filtrer l’eau.
+    • Produits chimiques : empoisonnent les sols et les organismes qui en dépendent.
+    • Déforestation : détruit leur capacité naturelle à protéger les côtes et filtrer l’eau.
+    
+    Pourquoi préserver les mangroves ?
+    Elles agissent comme un « foie de la planète » :
+    • Purifient l’eau des polluants.
+    • Protègent les côtes contre les tempêtes et l’érosion.
+    • Abritent une biodiversité essentielle et capturent de grandes quantités de CO₂.
+  `;
+
+  // Afficher le message éducatif dans l'élément .instruction (ou un autre élément de votre page)
+  document.querySelector('.instruction').innerText = message;
+}
 
    
     function updateGame() {

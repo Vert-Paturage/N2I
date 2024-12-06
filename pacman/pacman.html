@@ -14,14 +14,22 @@
             align-items: center;
             height: 100vh;
             background-color: #222;
+            flex-direction: column;
+            text-align: center;
         }
         #gameCanvas {
             border: 2px solid #fff;
             background-color: #333;
         }
+        #instruction {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
+    <div id="instruction">Utilisez les flèches pour déplacer le crabe (jaune) et ramasser tous les restes organiques (vert)! Mais attention aux méchants poissons !</div>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
 
     <script>
@@ -122,7 +130,15 @@
                 if (dist < crabe.size + fantome.size) {
                     lossCount++; // Incrémenter le nombre de pertes
                     if (lossCount >= 3) {
-                        alert('Vous avez perdu 3 fois. Le jeu est terminé !');
+                        alert('Bravo, le crabe a bien mangé ! 🦀🌊\n' +
+                      'Tout comme votre système digestif transforme les aliments en énergie pour votre corps, le crabe joue un rôle essentiel dans l\'océan en ramassant et filtrant les éléments qu’il trouve sur le fond marin.\n\n' +
+                      'Crabe et système digestif : une tâche vitale\n' +
+                      'Votre système digestif décompose les nutriments et élimine les déchets pour maintenir votre corps en bonne santé. De même, le crabe fouille le sable et les fonds marins pour manger des restes organiques, nettoyant ainsi l\'écosystème. C’est une fonction essentielle pour préserver l\'équilibre de l’océan, comme un système digestif propre et bien fonctionnant pour votre corps.\n\n' +
+                      'Les dangers pour le crabe\n' +
+                      '• Pollution plastique : empêche le crabe de trouver sa nourriture et perturbe son rôle de nettoyeur.\n' +
+                      '• Destruction des habitats : réduit la diversité alimentaire nécessaire pour une digestion saine de l\'écosystème.\n\n' +
+                      'Pourquoi protéger les crabes ?\n' +
+                      'Les crabes, comme le système digestif humain, sont des filtres naturels qui aident à maintenir la santé de l’océan. Ils éliminent les déchets et maintiennent l’équilibre de la chaîne alimentaire marine.\n');
                         return;
                     }
                     resetGame(); // Réinitialiser le jeu si le crabe touche un fantôme

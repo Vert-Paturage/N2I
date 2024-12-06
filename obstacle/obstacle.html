@@ -141,8 +141,21 @@
 
                 if (x > reef.x && x < reef.x + reef.width &&
                     y > reef.y && y < reef.y + reef.height) {
-                    alert('Bravo ! Vous avez atteint le récif !');
-                    resetGame();
+                        alert(
+        `Bravo, vous avez sauvé le récif ! 🌊💙\n\n` +
+        `Votre mission a montré une réalité fascinante : les courants marins sont comme le sang de l’océan. ` +
+        `Ils transportent oxygène et nutriments pour nourrir les écosystèmes, tout comme le système circulatoire alimente nos organes et cellules.\n\n` +
+        `Océan et corps humain : un parallèle vital\n` +
+        `Dans votre corps, le sang distribue ce dont chaque cellule a besoin pour survivre. Dans l’océan, les courants jouent le même rôle ` +
+        `pour les récifs coralliens et la vie marine. Si ce flux est interrompu par des polluants, comme les filets ou le plastique, ` +
+        `la vie marine « s’étouffe », tout comme nos organes sans circulation.\n\n` +
+        `Les dangers de la pollution :\n` +
+        `• Plastiques et filets abandonnés obstruent les courants et piègent la faune.\n` +
+        `• Produits chimiques toxiques perturbent les cycles naturels, comme un poison dans notre sang.\n\n` +
+        `Pourquoi agir ?\n` +
+        `L’océan produit 50% de l’oxygène que nous respirons, régule le climat et nourrit des milliards de personnes. ` +
+        `Préserver les océans, c’est protéger la vie sur Terre.`
+    );              resetGame();
                     return;
                 }
 
