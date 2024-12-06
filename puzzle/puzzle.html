@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle : Fonds Marins</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #1E90FF; /* Couleur océan */
+        }
+        .puzzle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        canvas {
+            margin: 20px;
+            background: #F0FFFF; /* Fond clair pour le plateau de puzzle */
+            border: 2px solid #000;
+        }
+        .reference-image {
+            margin-left: 20px;
+            border: 2px solid #000;
+        }
+        h1 {
+            color: #fff;
+        }
+        #instructions {
+            margin-top: 10px;
+            color: #fff;
+        }
+        #winMessage, #score, #timer {
+            margin-top: 20px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #score {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Puzzle : Fonds Marins</h1>
+    <p id="instructions">Assemblez le puzzle pour reconstituer le fond marin !</p>
+    <div class="puzzle-container">
+        <canvas id="puzzleCanvas" width="600" height="307"></canvas>
+        <img id="referenceImage" class="reference-image" width="150" height="77" />
+    </div>
+    <p id="score">Score : 0</p>
+    <p id="timer">Temps : 0s</p>
+    <p id="winMessage"></p> <!-- Message de victoire -->
+
+    <script>
+        const canvas = document.getElementById("puzzleCanvas");
+        const ctx = canvas.getContext("2d");
+        const referenceImage = document.getElementById("referenceImage");
+
+        // Variables du puzzle
+        const imageSrc = "marrin.jpg"; // Remplacez par l'URL de votre image
+        const rows = 3; // Nombre de lignes
+        const cols = 4; // Nombre de colonnes
+        const pieceWidth = canvas.width / cols; // Largeur d'une pièce (150px)
+        const pieceHeight = canvas.height / rows; // Hauteur d'une pièce (102px)
+        let pieces = [];
+        let slots = [];
+        let selectedPiece = null;
+        let score = 0;
+        let startTime = null;
+        let timerInterval;
+
+        // Charger l'image
+        const image = new Image();
+        image.src = imageSrc;
+
+        image.onload = () => {
+            console.log("Image chargée avec succès");
+            initSlots();
+            initPuzzle();
+            drawPuzzle();
+
+            // Afficher l'image miniature de référence
+            referenceImage.src = imageSrc;
+
+            // Démarrer le chronomètre dès que l'image est chargée
+            startTimer();
+        };
+
+        image.onerror = () => {
+            alert("L'image ne peut pas être chargée. Veuillez vérifier l'URL.");
+        };
+
+        // Initialiser les emplacements fixes
+        function initSlots() {
+            slots = [];
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    slots.push({
+                        x: col * pieceWidth,
+                        y: row * pieceHeight,
+                        width: pieceWidth,
+                        height: pieceHeight
+                    });
+                }
+            }
+        }
+
+        // Initialiser les pièces du puzzle
+        function initPuzzle() {
+            pieces = [];
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const correctX = col * pieceWidth;
+                    const correctY = row * pieceHeight;
+                    pieces.push({
+                        x: Math.random() * (canvas.width - pieceWidth),
+                        y: Math.random() * (canvas.height - pieceHeight),
+                        correctX,
+                        correctY,
+                        isDragging: false
+                    });
+                }
+            }
+        }
+
+        // Dessiner le puzzle
+        function drawPuzzle() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dessiner les emplacements fixes (slots)
+            slots.forEach(slot => {
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(slot.x, slot.y, slot.width, slot.height);
+            });
+
+            // Dessiner les pièces
+            pieces.forEach(piece => {
+                // Découpe de l'image pour chaque pièce
+                ctx.drawImage(
+                    image,
+                    piece.correctX,
+                    piece.correctY,
+                    pieceWidth,
+                    pieceHeight,
+                    piece.x,
+                    piece.y,
+                    pieceWidth,
+                    pieceHeight
+                );
+                ctx.strokeStyle = "#000";
+                ctx.strokeRect(piece.x, piece.y, pieceWidth, pieceHeight);
+            });
+
+            // Vérifier si toutes les pièces sont au bon endroit
+            checkWin();
+        }
+
+        // Vérifier si la pièce est proche de son emplacement correct
+        function isCorrectPosition(piece) {
+            const threshold = 10; // Tolérance pour placer une pièce
+            return (
+                Math.abs(piece.x - piece.correctX) < threshold &&
+                Math.abs(piece.y - piece.correctY) < threshold
+            );
+        }
+
+        // Vérifier si le joueur a gagné
+        function checkWin() {
+            let isWin = true;
+
+            // Vérifier si chaque pièce est à la bonne place
+            pieces.forEach(piece => {
+                if (!isCorrectPosition(piece)) {
+                    isWin = false;
+                }
+            });
+
+            // Afficher un message de victoire si toutes les pièces sont à leur place
+            const winMessage = document.getElementById("winMessage");
+            if (isWin) {
+                winMessage.textContent = "Félicitations, vous avez gagné !";
+                stopTimer(); // Arrêter le chronomètre lorsque le joueur a gagné
+            } else {
+                winMessage.textContent = ""; // Si pas encore gagné, enlever le message
+            }
+        }
+
+        // Démarrer le chronomètre
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Mettre à jour le chronomètre
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById("timer").textContent = `Temps : ${elapsedTime}s`;
+        }
+
+        // Arrêter le chronomètre
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Déplacer une pièce
+        function movePiece(e) {
+            if (selectedPiece) {
+                const rect = canvas.getBoundingClientRect();
+                selectedPiece.x = e.clientX - rect.left - pieceWidth / 2;
+                selectedPiece.y = e.clientY - rect.top - pieceHeight / 2;
+                drawPuzzle();
+            }
+        }
+
+        // Gérer les événements de la souris
+        canvas.addEventListener("mousedown", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            selectedPiece = pieces.find(
+                piece =>
+                    mouseX > piece.x &&
+                    mouseX < piece.x + pieceWidth &&
+                    mouseY > piece.y &&
+                    mouseY < piece.y + pieceHeight
+            );
+
+            if (selectedPiece) {
+                selectedPiece.isDragging = true;
+            }
+        });
+
+        canvas.addEventListener("mousemove", movePiece);
+
+        canvas.addEventListener("mouseup", () => {
+            if (selectedPiece) {
+                selectedPiece.isDragging = false;
+
+                // Si proche de la position correcte, aligner
+                if (isCorrectPosition(selectedPiece)) {
+                    selectedPiece.x = selectedPiece.correctX;
+                    selectedPiece.y = selectedPiece.correctY;
+                    score += 10; // Ajouter 10 points pour chaque pièce placée correctement
+                    document.getElementById("score").textContent = `Score : ${score}`;
+                }
+
+                drawPuzzle();
+                selectedPiece = null;
+            }
+        });
+    </script>
+</body>
+</html>
