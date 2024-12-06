@@ -59,34 +59,60 @@ gltfLoader.load(
   }
 );
 
+function createRing(position) {
+  const ringGeometry = new THREE.RingGeometry(0.1, 0.15, 32);
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff9900,
+    transparent: true,
+    opacity: 0.8,
+    side: THREE.DoubleSide,
+  });
+  const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+  ring.position.copy(position);
+  ring.lookAt(camera.position);
+  scene.add(ring);
+  return ring;
+}
 
-// Ajouter un point (une petite sphère) sur le modèle
-const pointGeometry = new THREE.SphereGeometry(0.5, 32, 32); // Petite sphère
-const pointMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-const coeur_point = new THREE.Mesh(pointGeometry, pointMaterial);
-coeur_point.position.set(0.5, 1.5, 0); // Position relative au modèle
-scene.add(coeur_point);
+function createClickableArea(position) {
+  const invisibleGeometry = new THREE.RingGeometry(0, 0.50, 32);
+  const invisibleMaterial = new THREE.MeshBasicMaterial({
+    transparent: true,
+    opacity: 0,
+  });
+  const clickableArea = new THREE.Mesh(invisibleGeometry, invisibleMaterial);
+  clickableArea.position.copy(position);
+  clickableArea.lookAt(camera.position);
+  scene.add(clickableArea);
+  return clickableArea;
+}
 
-const foie_point = new THREE.Mesh(pointGeometry, pointMaterial);
-foie_point.position.set(-0.3, 0, 0.4); // Position relative au modèle
-scene.add(foie_point);
+const clickablePoints = [];
 
-const intestin_point = new THREE.Mesh(pointGeometry, pointMaterial);
-intestin_point.position.set(0.3, 0, 0.4); // Position relative au modèle
-scene.add(intestin_point);
+const coeurRing = createRing(new THREE.Vector3(0.5, 1.5, 1));
+const coeurClickable = createClickableArea(new THREE.Vector3(0.5, 1.5, 1));
+clickablePoints.push({ ring: coeurRing, area: coeurClickable });
 
-const poumon_point = new THREE.Mesh(pointGeometry, pointMaterial);
-poumon_point.position.set(-0.5, 1.5, 0); // Position relative au modèle
-scene.add(poumon_point);
+const foieRing = createRing(new THREE.Vector3(-0.3, 0, 1));
+const foieClickable = createClickableArea(new THREE.Vector3(-0.3, 0, 1));
+clickablePoints.push({ ring: foieRing, area: foieClickable });
 
-const tibia_point = new THREE.Mesh(pointGeometry, pointMaterial);
-tibia_point.position.set(-0.5, -4, 0); // Position relative au modèle
-scene.add(tibia_point);
+const intestinRing = createRing(new THREE.Vector3(0.3, 0, 1));
+const intestinClickable = createClickableArea(new THREE.Vector3(0.3, 0, 1));
+clickablePoints.push({ ring: intestinRing, area: intestinClickable });
 
-const system_nerveux_point = new THREE.Mesh(pointGeometry, pointMaterial);
-system_nerveux_point.position.set(0, 3, 0); // Position relative au modèle
-scene.add(system_nerveux_point);
+const poumonRing = createRing(new THREE.Vector3(-0.5, 1.5, 1));
+const poumonClickable = createClickableArea(new THREE.Vector3(-0.5, 1.5, 1));
+clickablePoints.push({ ring: poumonRing, area: poumonClickable });
+
+const tibiaRing = createRing(new THREE.Vector3(-0.5, -4, 1));
+const tibiaClickable = createClickableArea(new THREE.Vector3(-0.5, -4, 1));
+clickablePoints.push({ ring: tibiaRing, area: tibiaClickable });
+
+const systemNerveuxRing = createRing(new THREE.Vector3(0, 3, 1));
+const systemNerveuxClickable = createClickableArea(new THREE.Vector3(0, 3, 1));
+clickablePoints.push({ ring: systemNerveuxRing, area: systemNerveuxClickable });
 
 
 // Composer pour post-processing
@@ -147,10 +173,6 @@ const vhsShader = {
 
 function animate(time) {
 
-//   if (model) {
-//     model.rotation.y += 0.01;
-//   }
-
 //   shaderPass.uniforms.time.value = time * 0.001;
 
   composer.render();
@@ -169,26 +191,18 @@ window.addEventListener('click', (event) => {
   // Mettre à jour le raycaster
   raycaster.setFromCamera(mouse, camera);
 
-  // Vérifier les intersections  
-  if (raycaster.intersectObject(coeur_point).length > 0) {
-    moveCameraToPoint(coeur_point);
-  }
+    // Vérifier les intersections
+    const intersects = raycaster.intersectObjects(clickablePoints.map(p => p.area));
+
+    if (intersects.length > 0) {
+      // Trouver l'objet cliqué
+      const clickedPoint = clickablePoints.find(p => p.area === intersects[0].object);
   
-  if (raycaster.intersectObject(foie_point).length > 0) {
-    moveCameraToPoint(foie_point);
-  }
-
-  if (raycaster.intersectObject(intestin_point).length > 0) {
-    moveCameraToPoint(intestin_point);
-  }
-
-  if (raycaster.intersectObject(tibia_point).length > 0) {
-    moveCameraToPoint(tibia_point);
-  }
-
-  if (raycaster.intersectObject(system_nerveux_point).length > 0) {
-    moveCameraToPoint(system_nerveux_point);
-  }
+      if (clickedPoint) {
+        moveCameraToPoint(clickedPoint.ring);
+      }
+    }
+ 
 });
 
 
