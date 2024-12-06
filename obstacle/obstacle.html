@@ -6,7 +6,6 @@
     <title>Guidez le sang de l’océan</title>
     <link rel="stylesheet" href="jeu-sonore.css">
     <style>
-        /* Style pour le timer en bas de l'écran */
         #timer {
             position: absolute;
             bottom: 10px;
@@ -37,54 +36,58 @@
         const restartButton = document.getElementById('restartButton');
         const timerElement = document.getElementById('timer');
 
-        // Dimensions du canvas
+        
         canvas.width = 400;
         canvas.height = 600;
 
-        // Variables du jeu
+        
         let isDrawing = false;
         let startX, startY;
-        let path = []; // Stocke les points du chemin
-        let gameTime = 0; // Temps du jeu en secondes
+        let path = []; 
+        let gameTime = 0; 
 
-        // Objets dans le jeu
-        const reef = { x: 180, y: 50, width: 40, height: 40 }; // Récif
+       
+        const reef = { x: 180, y: 50, width: 40, height: 40 }; 
         let obstacles = [
-            { x: 100, y: 300, width: 120, height: 40, speed: 2, directionX: 1, directionY: 1, label: 'Plastique' }, // Lié aux déchets métaboliques
-            { x: 200, y: 450, width: 150, height: 40, speed: 1.5, directionX: -1, directionY: -1, label: 'Barrages' }, // Lié aux artères bouchées
-            { x: 150, y: 200, width: 90, height: 40, speed: 2.5, directionX: 1, directionY: -1, label: 'Plastique' }, // Lié aux déchets métaboliques
-            { x: 50, y: 500, width: 50, height: 50, speed: 3, directionX: -1, directionY: 0, label: 'Déchets' }, // Lié aux résidus corporels
-            { x: 350, y: 550, width: 50, height: 50, speed: 1, directionX: 1, directionY: 0, label: 'Déchets' } // Lié aux résidus corporels
+            { x: 100, y: 300, width: 120, height: 40, speed: 2, directionX: 1, directionY: 1, label: 'Plastique', img: new Image() }, // Lié aux déchets métaboliques
+            { x: 200, y: 450, width: 150, height: 40, speed: 1.5, directionX: -1, directionY: -1, label: 'Barrages', img: new Image() }, // Lié aux artères bouchées
+            { x: 150, y: 200, width: 90, height: 40, speed: 2.5, directionX: 1, directionY: -1, label: 'Plastique', img: new Image() }, // Lié aux déchets métaboliques
+            { x: 50, y: 240, width: 50, height: 50, speed: 3, directionX: -1, directionY: -1, label: 'Déchets', img: new Image() }, // Lié aux résidus corporels
+            { x: 350, y: 470, width: 50, height: 50, speed: 3, directionX: 1, directionY: 1, label: 'Déchets', img: new Image() } // Lié aux résidus corporels
         ];
 
-        // Fonction pour dessiner le texte "Océan" en fond
+        
+        obstacles[0].img.src = 'plastique.png';
+        obstacles[1].img.src = 'barrage.png';
+        obstacles[2].img.src = 'sac.png';
+        obstacles[3].img.src = 'dechets.png';
+        obstacles[4].img.src = 'dechets.png';
+
+       
         function drawBackgroundText() {
             ctx.font = '80px Arial';
-            ctx.fillStyle = 'rgba(0, 0, 255, 0.2)'; // Couleur bleue transparente
-            ctx.fillText('Océan', 100, 300); // Position du texte "Océan" au centre
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.2)'; 
+            ctx.fillText('Océan', 100, 300); 
         }
-
-        // Fonction pour dessiner le récif
+        
         function drawReef() {
-            ctx.fillStyle = '#4caf50'; // Vert
+            ctx.fillStyle = '#4caf50'; 
             ctx.fillRect(reef.x, reef.y, reef.width, reef.height);
-            ctx.fillStyle = '#fff'; // Blanc pour le texte
+            ctx.fillStyle = '#fff';
             ctx.font = '12px Arial';
-            ctx.fillText('Récif', reef.x + 5, reef.y + 25); // Affiche le mot 'Récif' dans la zone verte
+            ctx.fillText('Récif', reef.x + 5, reef.y + 25); 
         }
 
-        // Fonction pour dessiner les obstacles
+       
         function drawObstacles() {
             obstacles.forEach(obstacle => {
-                ctx.fillStyle = '#f44336'; // Rouge pour les obstacles
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                ctx.fillStyle = '#fff'; // Blanc pour le texte
+                ctx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.width, obstacle.height); 
+                ctx.fillStyle = '#fff'; 
                 ctx.font = '12px Arial';
-                ctx.fillText(obstacle.label, obstacle.x + 5, obstacle.y + 15); // Affiche le texte (Plastique / Barrages / Déchets) dans les obstacles
+                ctx.fillText(obstacle.label, obstacle.x + 5, obstacle.y + 15); 
             });
         }
 
-        // Fonction pour dessiner le chemin
         function drawPath() {
             if (path.length > 1) {
                 ctx.beginPath();
@@ -98,26 +101,23 @@
             }
         }
 
-        // Réinitialise le jeu
         function resetGame() {
-            path = []; // Efface le chemin
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
-            drawBackgroundText(); // Dessine "Océan" en fond
+            path = []; 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            drawBackgroundText(); 
             drawReef();
             drawObstacles();
-            gameTime = 0; // Réinitialise le temps
-            timerElement.textContent = `Temps: 0s`; // Réinitialise le timer affiché
+            gameTime = 0; 
+            timerElement.textContent = `Temps: 0s`; 
         }
 
-        // Gère le traçage
         canvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
             startX = e.offsetX;
             startY = e.offsetY;
 
-            // Bloque le début du tracé uniquement à partir du bas du canvas
-            if (startY > canvas.height - 50) { // Commence en bas
-                path = [{ x: startX, y: startY }]; // Commence un nouveau chemin
+            if (startY > canvas.height - 50) { 
+                path = [{ x: startX, y: startY }]; 
             } else {
                 alert("Vous devez commencer par le bas de l'écran !");
                 resetGame();
@@ -130,7 +130,6 @@
                 const x = e.offsetX;
                 const y = e.offsetY;
 
-                // Vérifie si le joueur touche un obstacle
                 for (let obstacle of obstacles) {
                     if (x > obstacle.x && x < obstacle.x + obstacle.width &&
                         y > obstacle.y && y < obstacle.y + obstacle.height) {
@@ -140,7 +139,6 @@
                     }
                 }
 
-                // Vérifie si le joueur atteint le récif
                 if (x > reef.x && x < reef.x + reef.width &&
                     y > reef.y && y < reef.y + reef.height) {
                     alert('Bravo ! Vous avez atteint le récif !');
@@ -148,29 +146,23 @@
                     return;
                 }
 
-                // Ajoute le point actuel au chemin
                 path.push({ x, y });
             }
         });
 
         canvas.addEventListener('mouseup', () => {
             if (isDrawing) {
-                // On ne réinitialise pas tant qu'il y a un tracé
                 isDrawing = false;
             }
         });
 
-        // Bouton pour recommencer
         restartButton.addEventListener('click', resetGame);
 
-        // Met à jour les positions des obstacles
         function updateObstacles() {
             obstacles.forEach(obstacle => {
-                // Déplace chaque obstacle dans une direction aléatoire
-                obstacle.x += obstacle.directionX * obstacle.speed; // Déplacement horizontal
-                obstacle.y += obstacle.directionY * obstacle.speed; // Déplacement vertical
+                obstacle.x += obstacle.directionX * obstacle.speed; 
+                obstacle.y += obstacle.directionY * obstacle.speed;
 
-                // Inverse la direction si l'obstacle touche les bords du canvas
                 if (obstacle.x + obstacle.width > canvas.width || obstacle.x < 0) {
                     obstacle.directionX *= -1;
                 }
@@ -180,23 +172,24 @@
             });
         }
 
-        // Fonction pour animer le jeu
+
+        
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface l'écran
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            gameTime++;
+            timerElement.textContent = `Temps: ${gameTime}s`;
+
             drawBackgroundText();
             drawReef();
             drawObstacles();
             drawPath();
+
             updateObstacles();
 
-            // Mise à jour du temps du jeu
-            gameTime++;
-            timerElement.textContent = `Temps: ${gameTime}s`;
-
-            requestAnimationFrame(animate); // Anime la scène
+            requestAnimationFrame(animate);
         }
 
-        animate(); // Démarre l'animation du jeu
+        animate();
     </script>
 </body>
 </html>
