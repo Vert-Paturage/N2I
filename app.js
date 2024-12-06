@@ -22,7 +22,7 @@ const initialCameraLookAt = new THREE.Vector3(0, 0, 0);
 
 // Rendu
 const renderer = new THREE.WebGLRenderer();
-renderer.setClearColor(0xDEDBDB, 1);
+renderer.setClearColor(0x000000, 1); // Fond noir
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -32,6 +32,10 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
+
+const topLight = new THREE.PointLight(0xffffff, 1000, 50); // Lumière blanche, intensité 1.5, portée 50
+topLight.position.set(0, 10, 0); // Position au-dessus du modèle
+scene.add(topLight);
 
 let model;
 const gltfLoader = new GLTFLoader();
@@ -168,12 +172,12 @@ const vhsShader = {
   `,
 };
 
-// const shaderPass = new ShaderPass(vhsShader);
-// composer.addPass(shaderPass);
+const shaderPass = new ShaderPass(vhsShader);
+composer.addPass(shaderPass);
 
 function animate(time) {
 
-//   shaderPass.uniforms.time.value = time * 0.001;
+  shaderPass.uniforms.time.value = time * 0.001;
 
   composer.render();
   requestAnimationFrame(animate);
@@ -200,6 +204,8 @@ window.addEventListener('click', (event) => {
   
       if (clickedPoint) {
         moveCameraToPoint(clickedPoint.ring);
+
+        clickablePoints.forEach(p => { p.ring.visible = false; });
       }
     }
  
@@ -266,6 +272,7 @@ function animateCameraToInitialPosition() {
     }
   }
 
+  clickablePoints.forEach(p => { p.ring.visible = true; });
   requestAnimationFrame(animate);
 }
 
